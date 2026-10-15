@@ -6,7 +6,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 ## Checklist Tahapan
 
 - [x] 1. Setup proyek (struktur folder, package.json, .gitignore, database SQLite)
-- [ ] 2. Logika penjadwalan: kalender kerja (weekend & libur) + hitung tanggal mulai/selesai
+- [x] 2. Logika penjadwalan: kalender kerja (weekend & libur) + hitung tanggal mulai/selesai
 - [ ] 3. Dependensi FS/SS + delay, perhitungan ulang otomatis, deteksi circular dependency
 - [ ] 4. Critical path (forward/backward pass, tabel semua jalur)
 - [ ] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
@@ -32,6 +32,11 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   `server/db.js` (skema SQLite: projects, holidays, tasks, dependencies, resources,
   assignments), folder `server/`, `public/`, `tests/`, `docs/`. `npm install` OK,
   database terbuka dan tabel terbentuk. Belum ada masalah tersisa.
+- **Tahap 2 selesai.** File: `server/logic/calendar.js` (weekend bisa dikonfigurasi,
+  mode libur/kerja, libur one-off & recurring, `advanceWorkingDays`, `endDateFor`),
+  `tests/calendar.test.js` (17 test, lulus). Catatan: argumen direktori `node --test
+  tests/` tidak dikenali di Windows, script test diubah ke
+  `node --test "tests/**/*.test.js"`.
 
 ## Sesi
 
