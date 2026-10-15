@@ -155,6 +155,7 @@ p { margin: 0; }
 }
 
 .panel-head:first-child { margin-top: 0; }
+.panel-head-actions { display: flex; gap: 10px; flex-wrap: wrap; }
 
 /* ---------------- Kartu ---------------- */
 .card {

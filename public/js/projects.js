@@ -246,10 +246,32 @@ async function saveCalendar() {
   toast('Kalender disimpan. Jadwal kegiatan dihitung ulang.');
 }
 
+/* ---------- Data contoh (seed) ---------- */
+
+async function loadSampleData() {
+  const ok = window.confirm(
+    'Muat data contoh bawaan?\n\n'
+    + '1. Proyek A-J: "Sistem Informasi Kelola Pemberkasan" (critical path 33 hari)\n'
+    + '2. Proyek SDLC: 6 tahap, dependensi SS + delay, 7 anggota tim\n\n'
+    + 'Proyek dengan nama yang sama tidak akan dibuat ulang.'
+  );
+  if (!ok) return;
+
+  const res = await API.post('/api/seed', {});
+  await refreshProjects();
+  if (res.created.length) await selectProject(res.created[0].id);
+
+  const parts = [];
+  if (res.created.length) parts.push(`${res.created.length} proyek contoh dimuat.`);
+  if (res.skipped.length) parts.push(`Dilewati (sudah ada): ${res.skipped.map((s) => s.name).join(', ')}.`);
+  toast(parts.join(' ') || 'Tidak ada data contoh yang dimuat.', res.created.length ? 'ok' : 'info');
+}
+
 /* ---------- Event ---------- */
 
 function bindProjectEvents() {
   document.getElementById('btn-new-project').addEventListener('click', () => openProjectModal());
+  document.getElementById('btn-seed').addEventListener('click', () => handle(loadSampleData)());
 
   document.getElementById('project-form').addEventListener('submit', (e) => {
     e.preventDefault();

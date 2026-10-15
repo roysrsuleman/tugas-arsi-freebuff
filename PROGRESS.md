@@ -14,7 +14,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [x] 7. Frontend: manajemen proyek, kegiatan, resource
 - [x] 8. Frontend: Gantt chart + highlight critical path
 - [x] 9. Frontend: diagram PERT
-- [ ] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
+- [x] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
 - [ ] 11. Pengujian menyeluruh & perbaikan bug
 - [x] 12. README (instalasi, fitur, placeholder screenshot)
 
@@ -98,6 +98,15 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   SDLC SS+delay & libur 17 Juli; tim SDLC 1 PM + 2 analis + 2 programmer + 2
   tester + 13 penugasan; seed idempoten). Total 53 test lulus (EXIT=0).
   Catatan: awalnya salah hitung jumlah penugasan (9 -> 13), dikoreksi.
+- **Tahap 10 selesai (Sesi 3).** File: `server/routes/seed.js` (POST /api/seed
+  idempoten: {sample:'all'|'abjak'|'sdlc'}), `public/index.html` (tombol
+  "🎲 Muat Data Contoh"), `public/js/projects.js` (`loadSampleData` + konfirmasi
+  dialog), `public/css/styles.css`. Verifikasi via curl: seed ke-1 membuat 2
+  proyek, ke-2 skipped, sample ngasal -> 400; proyek A-J: durasi 33 hari kerja
+  (1 Jul - 14 Agu 2026), jalur 30/33/9/20, critical path B-E-H-J; SDLC: 7 resource
+  (1 PM, 2 analis, 2 programmer, 2 tester), A 30/6-6/7, B SS+3 3/7-14/7,
+  C SS+5 10/7-21/7 (libur 17 Juli dilewati), F selesai 3/8, biaya per kegiatan
+  terhitung. Data uji dihapus setelah verifikasi.
 
 ## Sesi
 
