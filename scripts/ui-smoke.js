@@ -308,7 +308,26 @@ async function main() {
     await waitFor(`document.getElementById('tasks-content').innerText.match(/Rp\\s*1\\.000\\.000/)`);
     ok('Penugasan resource & biaya kegiatan benar (Rp 1.000.000)');
 
-    // 9. Tidak boleh ada error JavaScript di halaman
+    // 9. Tab Gantt: bar, arsip weekend/libur, panah dependensi, tabel jalur
+    await evaluate(`document.querySelector('[data-tab="gantt"]').click(); true`);
+    await waitFor(`document.getElementById('tab-gantt').classList.contains('active')`);
+    await waitFor(`document.querySelectorAll('#gantt-content .gl-row').length === 2`);
+    await expect(`document.querySelectorAll('#gantt-content .gbar').length === 2`, 'Bar Gantt dirender per kegiatan');
+    await expect(`document.querySelectorAll('#gantt-content .gcol.we').length > 0`, 'Kolom weekend diarsir');
+    await expect(`document.querySelectorAll('#gantt-content .gcol.hol').length === 1`, 'Kolom hari libur (14 Okt) diarsir');
+    await expect(`document.querySelectorAll('#gantt-content svg.glinks path.glink').length >= 1`, 'Panah dependensi digambar');
+    await expect(`document.getElementById('gantt-analysis').innerText.includes('Critical Path')`, 'Tabel semua jalur menampilkan critical path');
+    await expect(`document.getElementById('gantt-analysis').innerText.toLowerCase().includes('slack')`, 'Tabel ES/EF/LS/LF/slack tampil');
+
+    // 10. Tombol Show/Hide Critical Path
+    await evaluate(`document.getElementById('btn-critical').click(); true`);
+    await waitFor(`document.querySelectorAll('#gantt-content .gbar.critical').length >= 1`);
+    await expect(`document.getElementById('btn-critical').getAttribute('aria-pressed') === 'true'`, 'Tombol critical aktif & bar kritis merah');
+    await evaluate(`document.getElementById('btn-critical').click(); true`);
+    await waitFor(`document.querySelectorAll('#gantt-content .gbar.critical').length === 0`);
+    ok('Toggle Show/Hide Critical Path berfungsi');
+
+    // 11. Tidak boleh ada error JavaScript di halaman
     if (pageErrors.length) {
       fail(`Ada error di browser:\n    - ${pageErrors.join('\n    - ')}`);
     }

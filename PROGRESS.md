@@ -12,7 +12,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [ ] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
 - [x] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
 - [x] 7. Frontend: manajemen proyek, kegiatan, resource
-- [ ] 8. Frontend: Gantt chart + highlight critical path
+- [x] 8. Frontend: Gantt chart + highlight critical path
 - [ ] 9. Frontend: diagram PERT
 - [ ] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
 - [ ] 11. Pengujian menyeluruh & perbaikan bug
@@ -70,6 +70,17 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   pendahulu lebih panjang dari penerus di-clamp (LS>=ES) sehingga slack tetap
   masuk akal (LF<EF ditampilkan sebagai LF=EF). Tahap 5 masih menunggu test
   lanjutan prompt 3.
+- **Tahap 8 selesai (Sesi 2).** File: `public/js/gantt.js` (panel kiri: kode, nama,
+  durasi, mulai, selesai, resource; panel kanan: timeline per hari dengan header
+  bulan+tanggal, kolom weekend (abu) & hari libur (oranye) diarsir, bar warna
+  kegiatan, panah dependensi SVG FS/SS+delay, tombol Show/Hide Critical Path yang
+  memberi warna merah pada bar kritis, tabel ES/EF/LS/LF/slack + tabel semua jalur
+  + kartu total durasi proyek), `public/index.html` (tab Gantt),
+  `public/css/styles.css` (gaya Gantt, sticky left panel), penyempurnaan
+  `app.js`/`tasks.js`/`projects.js`/`resources.js` (render ulang Gantt + invalidasi
+  cache critical-path). Smoke test UI diperluas jadi 22 pemeriksaan, lulus (EXIT=0).
+  Catatan: `innerText` header tabel berubah jadi huruf besar oleh CSS
+  `text-transform`, smoke test memakai `toLowerCase()`.
 
 ## Sesi
 

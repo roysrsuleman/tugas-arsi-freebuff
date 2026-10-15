@@ -147,6 +147,7 @@ async function saveResource() {
   await Promise.all([refreshResources(), refreshTasks()]); // biaya kegiatan ikut berubah
   renderResources();
   renderTasks();
+  renderGantt(); // kolom resource di panel kiri ikut diperbarui
   closeModal('resource-modal');
 }
 
@@ -158,6 +159,7 @@ async function deleteResource(id) {
   await Promise.all([refreshResources(), refreshTasks()]);
   renderResources();
   renderTasks();
+  renderGantt();
   closeModal('resource-modal');
   toast('Resource dihapus.');
 }

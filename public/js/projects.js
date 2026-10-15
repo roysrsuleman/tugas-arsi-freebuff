@@ -241,6 +241,7 @@ async function saveCalendar() {
   await refreshTasks(); // semua tanggal kegiatan dihitung ulang
   renderCalendarPanel();
   renderTasks();
+  renderGantt();
   toast('Kalender disimpan. Jadwal kegiatan dihitung ulang.');
 }
 

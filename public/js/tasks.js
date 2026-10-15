@@ -262,6 +262,7 @@ async function saveTask() {
 
   await refreshTasks();
   renderTasks();
+  renderGantt();
   closeModal('task-modal');
 }
 
@@ -272,6 +273,7 @@ async function deleteTask(id) {
   await API.del(`/api/tasks/${id}`);
   await refreshTasks();
   renderTasks();
+  renderGantt();
   closeModal('task-modal');
   toast('Kegiatan dihapus. Jadwal dihitung ulang.');
 }

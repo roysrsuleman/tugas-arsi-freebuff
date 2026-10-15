@@ -7,6 +7,7 @@ const state = {
   currentProject: null, // lengkap (termasuk kalender)
   tasks: [],
   resources: [],
+  criticalPath: null,  // cache hasil /critical-path (di-reset saat data berubah)
   activeTab: 'projects',
 };
 
@@ -115,6 +116,7 @@ async function refreshTasks() {
   state.tasks = state.currentProjectId
     ? await API.get(`/api/projects/${state.currentProjectId}/tasks`)
     : [];
+  state.criticalPath = null; // jadwal berubah -> analisis critical path ikut basi
 }
 
 async function refreshResources() {
@@ -138,6 +140,7 @@ async function selectProject(id) {
   renderCalendarPanel();
   renderTasks();
   renderResources();
+  renderGantt();
 }
 
 /* ---------- Render tab proyek (didefinisikan di projects.js) ---------- */
@@ -176,6 +179,7 @@ function init() {
   bindProjectEvents();
   bindTaskEvents();
   bindResourceEvents();
+  bindGanttEvents();
 
   const savedTab = localStorage.getItem('mini-gantt-active-tab');
   showTab(savedTab && document.getElementById(`tab-${savedTab}`) ? savedTab : 'projects');

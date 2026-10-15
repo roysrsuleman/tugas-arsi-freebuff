@@ -31,7 +31,8 @@
     <button class="tab-btn active" role="tab" aria-selected="true" data-tab="projects">📁 Proyek</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="tasks">✅ Kegiatan</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="resources">👥 Resource</button>
-    <!-- Tab Gantt Chart, Critical Path, dan PERT ditambahkan pada tahap berikutnya -->
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="gantt">📊 Gantt</button>
+    <!-- Tab PERT ditambahkan pada tahap berikutnya -->
   </nav>
 
   <main class="content">
@@ -79,6 +80,19 @@
         <button class="btn primary" id="btn-new-resource">＋ Resource Baru</button>
       </div>
       <div id="resources-content"></div>
+    </section>
+
+    <!-- ===== Tab Gantt ===== -->
+    <section id="tab-gantt" class="tab-panel" role="tabpanel">
+      <div class="panel-head">
+        <div>
+          <h2>Gantt Chart</h2>
+          <p class="muted">Bar kegiatan pada timeline — kolom weekend &amp; hari libur diarsir, panah = dependensi.</p>
+        </div>
+        <button class="btn ghost" id="btn-critical" aria-pressed="false" disabled>🟥 Tampilkan Critical Path</button>
+      </div>
+      <div id="gantt-content"></div>
+      <div id="gantt-analysis"></div>
     </section>
   </main>
 
@@ -247,5 +261,6 @@
   <script src="/js/projects.js"></script>
   <script src="/js/tasks.js"></script>
   <script src="/js/resources.js"></script>
+  <script src="/js/gantt.js"></script>
 </body>
 </html>
