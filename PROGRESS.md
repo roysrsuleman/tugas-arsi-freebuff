@@ -10,7 +10,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [x] 3. Dependensi FS/SS + delay, perhitungan ulang otomatis, deteksi circular dependency
 - [ ] 4. Critical path (forward/backward pass, tabel semua jalur)
 - [ ] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
-- [ ] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
+- [x] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
 - [ ] 7. Frontend: manajemen proyek, kegiatan, resource
 - [ ] 8. Frontend: Gantt chart + highlight critical path
 - [ ] 9. Frontend: diagram PERT
@@ -42,6 +42,13 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   tanggal mulai paling akhir dari multi-pendahulu, `recalcProjectSchedule` yang
   menulis ulang tanggal ke DB), `tests/schedule.test.js` (22 test, lulus; total 39).
   Semua tahap 1-3 teruji, belum ada bug tersisa.
+- **Tahap 6 selesai.** File: `server/validate.js` (validasi berbahasa Indonesia),
+  `server/app.js`, `server/index.js`, `server/routes/{helpers,projects,tasks,resources}.js`.
+  Endpoint: CRUD `/api/projects` (+ `/calendar`), `/api/projects/:id/tasks`,
+  `/api/tasks/:id`, `/api/projects/:id/resources`, `/api/resources/:id`; penugasan
+  resource lewat field `resourceIds` pada payload kegiatan; biaya = durasi x total
+  tarif. Diuji via curl: recalc, circular -> 400 (rollback aman), duplikat kode,
+  validasi input, DELETE cascade, 404. `npm test` tetap 39 lulus.
 
 ## Sesi
 
