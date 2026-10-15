@@ -124,6 +124,25 @@ class Calendar {
     return this.nextWorkingDayOnOrAfter(addDays(date, 1));
   }
 
+  /** Hari kerja pertama < tanggal. */
+  previousWorkingDayBefore(date) {
+    let cursor = addDays(date, -1);
+    while (!this.isWorkingDay(cursor)) cursor = addDays(cursor, -1);
+    return cursor;
+  }
+
+  /**
+   * Mundur n langkah hari kerja dari tanggal (kebalikan dari
+   * advanceWorkingDays; dipakai backward pass critical path).
+   * n = 0 mengembalikan tanggal apa adanya.
+   */
+  retreatWorkingDays(date, n) {
+    if (!Number.isInteger(n) || n < 0) throw new Error(`Langkah tidak valid: ${n}`);
+    let cursor = date;
+    for (let i = 0; i < n; i += 1) cursor = this.previousWorkingDayBefore(cursor);
+    return cursor;
+  }
+
   /**
    * Maju n langkah hari kerja dari tanggal.
    * n = 0 mengembalikan tanggal apa adanya; setiap langkah = hari kerja

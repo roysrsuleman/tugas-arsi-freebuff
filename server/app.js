@@ -9,6 +9,7 @@ const path = require('path');
 const projectsRouter = require('./routes/projects');
 const tasksRouter = require('./routes/tasks');
 const resourcesRouter = require('./routes/resources');
+const analysisRouter = require('./routes/analysis');
 const { ValidationError } = require('./validate');
 const { CircularDependencyError } = require('./logic/schedule');
 
@@ -25,6 +26,7 @@ function createApp() {
   app.use('/api', projectsRouter);
   app.use('/api', tasksRouter);
   app.use('/api', resourcesRouter);
+  app.use('/api', analysisRouter);
 
   // Endpoint API tidak dikenal
   app.use('/api', (req, res) => {

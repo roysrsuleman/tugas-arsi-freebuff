@@ -8,7 +8,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [x] 1. Setup proyek (struktur folder, package.json, .gitignore, database SQLite)
 - [x] 2. Logika penjadwalan: kalender kerja (weekend & libur) + hitung tanggal mulai/selesai
 - [x] 3. Dependensi FS/SS + delay, perhitungan ulang otomatis, deteksi circular dependency
-- [ ] 4. Critical path (forward/backward pass, tabel semua jalur)
+- [x] 4. Critical path (forward/backward pass, tabel semua jalur)
 - [ ] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
 - [x] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
 - [x] 7. Frontend: manajemen proyek, kegiatan, resource
@@ -60,6 +60,16 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   API, bagian Screenshot dengan referensi gambar di `docs/`, lisensi).
 - **Status sesi 1:** tahap 1, 2, 3, 6, 7, 12 selesai & ter-commit. Tahap 4, 5
   (sebagian), 8, 9, 10, 11 menunggu prompt berikutnya.
+- **Tahap 4 selesai (Sesi 2 — Prompt 2).** File: `server/logic/criticalPath.js`
+  (`computeCriticalPath`: forward pass ES/EF dari jadwal, backward pass LF/LS
+  via FS/SS + delay hari kerja, slack, enumerasi semua jalur sumber->akhir dengan
+  total estimasi durasi & penandaan jalur terpanjang), `server/logic/calendar.js`
+  (tambah `previousWorkingDayBefore` & `retreatWorkingDays`),
+  `server/routes/analysis.js` (GET /api/projects/:id/critical-path),
+  `tests/critical-path.test.js` (9 test; total 48 lulus, EXIT=0). Kasus SS dengan
+  pendahulu lebih panjang dari penerus di-clamp (LS>=ES) sehingga slack tetap
+  masuk akal (LF<EF ditampilkan sebagai LF=EF). Tahap 5 masih menunggu test
+  lanjutan prompt 3.
 
 ## Sesi
 
