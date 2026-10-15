@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mini Gantt Project — Penjadwalan Proyek</title>
+  <link rel="icon" href="data:,">
+  <meta name="description" content="Mini Gantt Project: aplikasi web penjadwalan proyek pengembangan perangkat lunak sederhana.">
+  <link rel="stylesheet" href="/css/styles.css">
+</head>
+<body>
+  <!-- ===== Header ===== -->
+  <header class="app-header">
+    <div class="brand">
+      <span class="brand-icon" aria-hidden="true">📅</span>
+      <div class="brand-text">
+        <h1>Mini Gantt Project</h1>
+        <p>Penjadwalan proyek pengembangan perangkat lunak</p>
+      </div>
+    </div>
+    <div class="project-picker">
+      <label for="project-select">Proyek aktif</label>
+      <select id="project-select">
+        <option value="">— Pilih proyek —</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- ===== Navigasi tab ===== -->
+  <nav class="tabs" role="tablist" aria-label="Navigasi utama">
+    <button class="tab-btn active" role="tab" aria-selected="true" data-tab="projects">📁 Proyek</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="tasks">✅ Kegiatan</button>
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="resources">👥 Resource</button>
+    <!-- Tab Gantt Chart, Critical Path, dan PERT ditambahkan pada tahap berikutnya -->
+  </nav>
+
+  <main class="content">
+    <!-- ===== Tab Proyek ===== -->
+    <section id="tab-projects" class="tab-panel active" role="tabpanel">
+      <div class="panel-head">
+        <div>
+          <h2>Daftar Proyek</h2>
+          <p class="muted">Kelola proyek dan pengaturan kalender kerjanya.</p>
+        </div>
+        <button class="btn primary" id="btn-new-project">＋ Proyek Baru</button>
+      </div>
+
+      <div id="project-cards" class="card-grid"></div>
+
+      <!-- Pengaturan kalender proyek aktif -->
+      <div class="panel-head" id="calendar-head">
+        <div>
+          <h2>Pengaturan Kalender</h2>
+          <p class="muted">Weekend &amp; hari libur proyek aktif. Perubahan kalender menghitung ulang seluruh jadwal.</p>
+        </div>
+      </div>
+      <div id="calendar-panel" class="card calendar-card"></div>
+    </section>
+
+    <!-- ===== Tab Kegiatan ===== -->
+    <section id="tab-tasks" class="tab-panel" role="tabpanel">
+      <div class="panel-head">
+        <div>
+          <h2>Daftar Kegiatan</h2>
+          <p class="muted">Tanggal mulai &amp; selesai dihitung otomatis dari durasi, dependensi, weekend, dan hari libur.</p>
+        </div>
+        <button class="btn primary" id="btn-new-task">＋ Kegiatan Baru</button>
+      </div>
+      <div id="tasks-content"></div>
+    </section>
+
+    <!-- ===== Tab Resource ===== -->
+    <section id="tab-resources" class="tab-panel" role="tabpanel">
+      <div class="panel-head">
+        <div>
+          <h2>Daftar Resource / Anggota Tim</h2>
+          <p class="muted">Tugaskan resource ke kegiatan untuk menghitung biaya (durasi × tarif).</p>
+        </div>
+        <button class="btn primary" id="btn-new-resource">＋ Resource Baru</button>
+      </div>
+      <div id="resources-content"></div>
+    </section>
+  </main>
+
+  <footer class="app-footer">
+    <p>Mini Gantt Project — dibangun dengan Node.js, Express, dan SQLite.</p>
+  </footer>
+
+  <!-- ===== Modal: Proyek ===== -->
+  <div class="modal-overlay" id="project-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
+      <div class="modal-header">
+        <h2 id="project-modal-title">Proyek Baru</h2>
+        <button type="button" class="icon-btn" data-close="project-modal" aria-label="Tutup">✕</button>
+      </div>
+      <form id="project-form" class="modal-body">
+        <input type="hidden" id="project-id">
+        <div class="field">
+          <label for="project-name">Nama proyek <span class="req">*</span></label>
+          <input type="text" id="project-name" maxlength="255" placeholder="cth: Sistem Informasi Akademik" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="project-org">Organisasi</label>
+            <input type="text" id="project-org" maxlength="255" placeholder="cth: PT XZ">
+          </div>
+          <div class="field">
+            <label for="project-start">Tanggal mulai <span class="req">*</span></label>
+            <input type="date" id="project-start" required>
+          </div>
+        </div>
+        <div class="field">
+          <label for="project-desc">Deskripsi</label>
+          <textarea id="project-desc" rows="3" maxlength="2000" placeholder="Ringkasan proyek (opsional)"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn ghost" data-close="project-modal">Batal</button>
+          <button type="submit" class="btn primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Modal: Kegiatan ===== -->
+  <div class="modal-overlay" id="task-modal" hidden>
+    <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
+      <div class="modal-header">
+        <h2 id="task-modal-title">Kegiatan Baru</h2>
+        <button type="button" class="icon-btn" data-close="task-modal" aria-label="Tutup">✕</button>
+      </div>
+      <form id="task-form" class="modal-body">
+        <input type="hidden" id="task-id">
+        <div class="field-row">
+          <div class="field field-sm">
+            <label for="task-code">Kode <span class="req">*</span></label>
+            <input type="text" id="task-code" maxlength="20" placeholder="A" required>
+          </div>
+          <div class="field">
+            <label for="task-name">Nama kegiatan <span class="req">*</span></label>
+            <input type="text" id="task-name" maxlength="200" placeholder="cth: Analisis Kebutuhan" required>
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field field-sm">
+            <label for="task-duration">Durasi (hari kerja) <span class="req">*</span></label>
+            <input type="number" id="task-duration" min="1" max="3650" value="1" required>
+          </div>
+          <div class="field">
+            <label for="task-priority">Prioritas</label>
+            <select id="task-priority">
+              <option value="rendah">Rendah</option>
+              <option value="sedang" selected>Sedang</option>
+              <option value="tinggi">Tinggi</option>
+            </select>
+          </div>
+          <div class="field field-sm">
+            <label for="task-color">Warna bar</label>
+            <input type="color" id="task-color" value="#4e79a7">
+          </div>
+        </div>
+
+        <fieldset class="field-group">
+          <legend>Dependensi — Kegiatan Pendahulu</legend>
+          <p class="hint">FS = mulai setelah pendahulu selesai · SS = mulai bersamaan · Delay dalam hari kerja.</p>
+          <div id="pred-rows" class="pred-rows"></div>
+          <button type="button" class="btn ghost" id="btn-add-pred">＋ Tambah pendahulu</button>
+        </fieldset>
+
+        <fieldset class="field-group">
+          <legend>Resource yang Ditugaskan</legend>
+          <div id="res-choices" class="choice-list"></div>
+        </fieldset>
+
+        <div class="modal-footer modal-footer-3">
+          <button type="button" class="btn danger" id="btn-delete-task" hidden>Hapus</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn ghost" data-close="task-modal">Batal</button>
+          <button type="submit" class="btn primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Modal: Resource ===== -->
+  <div class="modal-overlay" id="resource-modal" hidden>
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resource-modal-title">
+      <div class="modal-header">
+        <h2 id="resource-modal-title">Resource Baru</h2>
+        <button type="button" class="icon-btn" data-close="resource-modal" aria-label="Tutup">✕</button>
+      </div>
+      <form id="resource-form" class="modal-body">
+        <input type="hidden" id="resource-id">
+        <div class="field">
+          <label for="resource-name">Nama <span class="req">*</span></label>
+          <input type="text" id="resource-name" maxlength="120" placeholder="cth: Budi Santoso" required>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="resource-email">Email</label>
+            <input type="email" id="resource-email" maxlength="255" placeholder="cth: budi@contoh.com">
+          </div>
+          <div class="field">
+            <label for="resource-phone">Telepon</label>
+            <input type="text" id="resource-phone" maxlength="40" placeholder="cth: 081234567890">
+          </div>
+        </div>
+        <div class="field-row">
+          <div class="field">
+            <label for="resource-position">Posisi</label>
+            <select id="resource-position">
+              <option>Project Manager</option>
+              <option>Analis</option>
+              <option>Programmer</option>
+              <option>Tester</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="resource-rate">Tarif per hari (Rp) <span class="req">*</span></label>
+            <input type="number" id="resource-rate" min="0" step="1000" value="0" required>
+          </div>
+        </div>
+
+        <fieldset class="field-group">
+          <legend>Hari Libur Pribadi (opsional)</legend>
+          <div class="inline-form">
+            <input type="date" id="resource-dayoff">
+            <button type="button" class="btn ghost" id="btn-add-dayoff">Tambah</button>
+          </div>
+          <div id="days-off-chips" class="chips"></div>
+        </fieldset>
+
+        <div class="modal-footer modal-footer-3">
+          <button type="button" class="btn danger" id="btn-delete-resource" hidden>Hapus</button>
+          <span class="spacer"></span>
+          <button type="button" class="btn ghost" data-close="resource-modal">Batal</button>
+          <button type="submit" class="btn primary">Simpan</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ===== Toast ===== -->
+  <div id="toast-container" aria-live="polite"></div>
+
+  <script src="/js/api.js"></script>
+  <script src="/js/app.js"></script>
+  <script src="/js/projects.js"></script>
+  <script src="/js/tasks.js"></script>
+  <script src="/js/resources.js"></script>
+</body>
+</html>

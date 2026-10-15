@@ -11,7 +11,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [ ] 4. Critical path (forward/backward pass, tabel semua jalur)
 - [ ] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
 - [x] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
-- [ ] 7. Frontend: manajemen proyek, kegiatan, resource
+- [x] 7. Frontend: manajemen proyek, kegiatan, resource
 - [ ] 8. Frontend: Gantt chart + highlight critical path
 - [ ] 9. Frontend: diagram PERT
 - [ ] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
@@ -49,6 +49,12 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   resource lewat field `resourceIds` pada payload kegiatan; biaya = durasi x total
   tarif. Diuji via curl: recalc, circular -> 400 (rollback aman), duplikat kode,
   validasi input, DELETE cascade, 404. `npm test` tetap 39 lulus.
+- **Tahap 7 selesai.** File: `public/index.html`, `public/css/styles.css`,
+  `public/js/{api,app,projects,tasks,resources}.js` (murni tanpa framework),
+  `scripts/ui-smoke.js` (smoke test UI opsional via Chrome headless CDP,
+  14 pemeriksaan lulus: CRUD proyek, kalender/libur, tanggal otomatis, toast
+  circular, resource + biaya). Tampilan responsif (tabel jadi kartu di layar
+  kecil), seluruh teks berbahasa Indonesia. Data uji otomatis dibersihkan.
 
 ## Sesi
 
