@@ -1,0 +1,19 @@
+# Dependensi
+node_modules/
+
+# Database
+*.db
+*.db-journal
+*.db-wal
+*.db-shm
+*.sqlite
+*.sqlite3
+
+# Environment
+.env
+.env.local
+
+# Lain-lain
+chat-messages.json
+npm-debug.log*
+.DS_Store

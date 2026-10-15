@@ -1,0 +1,26 @@
+{
+  "name": "mini-gantt-project",
+  "version": "1.0.0",
+  "description": "Mini Gantt Project - aplikasi web penjadwalan proyek pengembangan perangkat lunak sederhana",
+  "main": "server/index.js",
+  "type": "commonjs",
+  "scripts": {
+    "start": "node server/index.js",
+    "test": "node --test tests/"
+  },
+  "keywords": [
+    "gantt",
+    "penjadwalan",
+    "project-management",
+    "express",
+    "sqlite"
+  ],
+  "license": "MIT",
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "better-sqlite3": "^12.0.0",
+    "express": "^4.21.2"
+  }
+}
