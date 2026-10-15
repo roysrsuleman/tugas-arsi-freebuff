@@ -88,6 +88,7 @@ function connectCdp(wsUrl) {
 }
 
 let passed = 0;
+let smokeCreatedIds = []; // proyek contoh yang dibuat smoke test (untuk dibersihkan)
 function ok(label) {
   passed += 1;
   console.log(`  ✔ ${label}`);
@@ -336,7 +337,58 @@ async function main() {
     await expect(`document.querySelectorAll('#pert-content svg.pert-svg .pedge.critical').length === 1`, 'Panah jalur kritis merah');
     await expect(`document.getElementById('pert-content').innerText.includes('hari kerja')`, 'Info total durasi proyek tampil');
 
-    // 12. Tidak boleh ada error JavaScript di halaman
+    // 12. Data contoh: tombol "Muat Data Contoh" (dialog dikonfirmasi otomatis)
+    const beforeIds = (await fetchJson(`${BASE}/api/projects`)).map((p) => p.id);
+    await evaluate(`document.querySelector('[data-tab="projects"]').click(); true`);
+    await evaluate(`(() => { window.confirm = () => true; return true; })()`);
+    await evaluate(`document.getElementById('btn-seed').click(); true`);
+    await waitFor(`document.getElementById('project-cards').innerText.includes('Sistem Informasi Kelola Pemberkasan')
+      && document.getElementById('project-cards').innerText.includes('SDLC')`);
+    smokeCreatedIds = (await fetchJson(`${BASE}/api/projects`)).map((p) => p.id).filter((id) => !beforeIds.includes(id));
+    ok('Tombol Muat Data Contoh memuat 2 proyek contoh');
+
+    // 13. Data contoh A-J di Gantt: 10 bar, total 33 hari, critical B-E-H-J
+    await evaluate(`document.querySelector('[data-tab="gantt"]').click(); true`);
+    await waitFor(`document.querySelectorAll('#gantt-content .gl-row').length === 10`);
+    await expect(`document.querySelectorAll('#gantt-content .gbar').length === 10`, 'Gantt A-J: 10 bar kegiatan');
+    await waitFor(`document.getElementById('gantt-analysis').innerText.includes('33 hari kerja')`);
+    await expect(`document.getElementById('gantt-analysis').innerText.includes('B → E → H → J')`, 'Jalur B-E-H-J muncul di tabel jalur');
+    await evaluate(`document.getElementById('btn-critical').click(); true`);
+    await waitFor(`document.querySelectorAll('#gantt-content .gbar.critical').length === 4`);
+    await expect(`document.getElementById('btn-critical').getAttribute('aria-pressed') === 'true'`, 'Critical path A-J = 4 bar merah (B, E, H, J)');
+    await evaluate(`document.getElementById('btn-critical').click(); true`);
+
+    // 14. PERT A-J: 10 node, 4 node kritis
+    await evaluate(`document.querySelector('[data-tab="pert"]').click(); true`);
+    await waitFor(`document.querySelectorAll('#pert-content svg.pert-svg .pnode').length === 10`);
+    await expect(`document.querySelectorAll('#pert-content svg.pert-svg .pnode.crit').length === 4`, 'PERT A-J: 4 node kritis merah');
+
+    // 15. Proyek SDLC: SS + delay, libur 17 Juli, resource tampil
+    await evaluate(`(() => { const s = document.getElementById('project-select');
+      const opt = [...s.options].find((o) => o.textContent.includes('SDLC'));
+      s.value = opt.value; s.dispatchEvent(new Event('change')); return true; })()`);
+    await waitFor(`document.querySelectorAll('#gantt-content .gl-row').length === 6`);
+    await expect(`document.getElementById('gantt-analysis').innerText.includes('24 hari kerja')`, 'SDLC: total durasi proyek 24 hari kerja');
+    await expect(`(() => { const t = document.getElementById('gantt-content').innerText;
+      return t.includes('3 Jul 2026') && t.includes('10 Jul 2026'); })()`, 'SDLC: jadwal SS + delay (B 3 Jul, C 10 Jul)');
+    await expect(`document.getElementById('gantt-content').innerText.includes('Rani Puspita')`, 'SDLC: nama resource tampil di panel kiri');
+
+    // 16. Validasi form & konfirmasi hapus
+    await evaluate(`document.querySelector('[data-tab="projects"]').click(); true`);
+    await evaluate(`document.getElementById('btn-new-project').click(); true`);
+    await waitFor(`!document.getElementById('project-modal').hidden`);
+    await evaluate(`(() => { document.getElementById('project-name').value = '';
+      document.getElementById('project-form').requestSubmit(); return true; })()`);
+    await expect(`!document.getElementById('project-modal').hidden && document.getElementById('project-name').matches(':invalid')`, 'Form proyek menolak nama kosong (validasi browser)');
+    await evaluate(`document.querySelector('#project-modal [data-close="project-modal"]').click(); true`);
+    await waitFor(`document.getElementById('project-modal').hidden`);
+    await evaluate(`(() => { const card = [...document.querySelectorAll('#project-cards .project-card')]
+      .find((c) => c.innerText.includes('SDLC'));
+      card.querySelector('button[data-action="delete"]').click(); return true; })()`);
+    await waitFor(`!document.getElementById('project-cards').innerText.includes('SDLC')`);
+    ok('Konfirmasi hapus proyek berfungsi (proyek SDLC terhapus)');
+
+    // 17. Tidak boleh ada error JavaScript di halaman
     if (pageErrors.length) {
       fail(`Ada error di browser:\n    - ${pageErrors.join('\n    - ')}`);
     }
@@ -350,24 +402,22 @@ async function main() {
   }
 }
 
+async function cleanupSmokeData() {
+  try {
+    const projects = await fetchJson(`${BASE}/api/projects`);
+    for (const p of projects.filter((x) => x.name === TEST_PROJECT || smokeCreatedIds.includes(x.id))) {
+      await fetch(`${BASE}/api/projects/${p.id}`, { method: 'DELETE' });
+    }
+  } catch (_) { /* abaikan */ }
+}
+
 main()
   .then(async () => {
-    // Bersihkan data uji
-    try {
-      const projects = await fetchJson(`${BASE}/api/projects`);
-      for (const p of projects.filter((x) => x.name === TEST_PROJECT)) {
-        await fetch(`${BASE}/api/projects/${p.id}`, { method: 'DELETE' });
-      }
-    } catch (_) { /* abaikan */ }
+    await cleanupSmokeData(); // Bersihkan data uji
     process.exit(0);
   })
   .catch(async (err) => {
     console.error(`\nGAGAL: ${err.message}`);
-    try {
-      const projects = await fetchJson(`${BASE}/api/projects`);
-      for (const p of projects.filter((x) => x.name === TEST_PROJECT)) {
-        await fetch(`${BASE}/api/projects/${p.id}`, { method: 'DELETE' });
-      }
-    } catch (_) { /* abaikan */ }
+    await cleanupSmokeData();
     process.exit(1);
   });

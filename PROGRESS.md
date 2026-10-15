@@ -15,7 +15,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [x] 8. Frontend: Gantt chart + highlight critical path
 - [x] 9. Frontend: diagram PERT
 - [x] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
-- [ ] 11. Pengujian menyeluruh & perbaikan bug
+- [x] 11. Pengujian menyeluruh & perbaikan bug
 - [x] 12. README (instalasi, fitur, placeholder screenshot)
 
 ## Aturan
@@ -107,6 +107,19 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   (1 PM, 2 analis, 2 programmer, 2 tester), A 30/6-6/7, B SS+3 3/7-14/7,
   C SS+5 10/7-21/7 (libur 17 Juli dilewati), F selesai 3/8, biaya per kegiatan
   terhitung. Data uji dihapus setelah verifikasi.
+- **Tahap 11 selesai (Sesi 3 — akhir).** `scripts/ui-smoke.js` diperluas jadi
+  **36 pemeriksaan, lulus (EXIT=0)**: tombol "Muat Data Contoh" (dialog
+  dikonfirmasi otomatis di headless), Gantt A-J 10 bar + 33 hari + 4 bar merah
+  (B,E,H,J), PERT A-J 10 node + 4 kritis, proyek SDLC (24 hari kerja, B 3 Jul
+  & C 10 Jul = SS+delay, resource tampil), validasi form HTML5, konfirmasi hapus
+  proyek, tanpa error JavaScript. Cleanup smoke test otomatis (hanya menghapus
+  proyek yang ia buat). `README.md` dilengkapi (fitur 1-8, API seed &
+  critical-path, struktur file, cara test, placeholder screenshot).
+  Bug yang ditemukan & diperbaiki selama sesi 3: ekspektasi test jumlah
+  penugasan salah hitung (9 -> 13). Tidak ada bug fungsional tersisa.
+- **Status sesi 3 (Prompt 3): SEMUA TAHAP (1-12) SELESAI.** Kriteria selesai
+  terpenuhi: aplikasi berjalan tanpa error fatal, 53 unit test lulus, data contoh
+  menghasilkan critical path B-E-H-J = 33 hari, Gantt & PERT tampil benar.
 
 ## Sesi
 
