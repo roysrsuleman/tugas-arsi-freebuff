@@ -9,7 +9,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [x] 2. Logika penjadwalan: kalender kerja (weekend & libur) + hitung tanggal mulai/selesai
 - [x] 3. Dependensi FS/SS + delay, perhitungan ulang otomatis, deteksi circular dependency
 - [x] 4. Critical path (forward/backward pass, tabel semua jalur)
-- [ ] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
+- [x] 5. Unit test logika (kalender, dependensi, critical path) dan lulus semua
 - [x] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
 - [x] 7. Frontend: manajemen proyek, kegiatan, resource
 - [x] 8. Frontend: Gantt chart + highlight critical path
@@ -91,6 +91,13 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - **Status sesi 2 (Prompt 2):** tahap 4, 8, 9 selesai & ter-commit. Tahap 5
   (test lanjutan), 10 (data contoh + verifikasi 33 hari), 11 (pengujian
   menyeluruh) menunggu prompt 3.
+- **Tahap 5 selesai (Sesi 3 — Prompt 3).** File: `server/seed.js` (definisi data
+  contoh A-J & SDLC sebagai fixture + `seedDatabase`), `tests/seed.test.js`
+  (5 test: jalur A-D-H-J=30, B-E-H-J=33, B-F-J=9, C-G-I-J=20; critical path
+  B-E-H-J total 33 hari & makespan 33 hari kerja (1 Jul - 14 Agu 2026); jadwal
+  SDLC SS+delay & libur 17 Juli; tim SDLC 1 PM + 2 analis + 2 programmer + 2
+  tester + 13 penugasan; seed idempoten). Total 53 test lulus (EXIT=0).
+  Catatan: awalnya salah hitung jumlah penugasan (9 -> 13), dikoreksi.
 
 ## Sesi
 
