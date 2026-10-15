@@ -242,6 +242,7 @@ async function saveCalendar() {
   renderCalendarPanel();
   renderTasks();
   renderGantt();
+  renderPert();
   toast('Kalender disimpan. Jadwal kegiatan dihitung ulang.');
 }
 

@@ -824,6 +824,34 @@ tr.row-critical td { background: #fdeef0; }
 tr.row-critical td:first-child { border-left: 3px solid var(--danger); }
 
 /* ============================================================
+   Diagram PERT
+   ============================================================ */
+.pert-wrap {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  box-shadow: var(--shadow);
+  padding: 12px;
+  overflow-x: auto;
+}
+
+.pert-svg { display: block; margin: 0 auto; }
+.pert-svg .pnode rect {
+  fill: #fff;
+  stroke: var(--primary);
+  stroke-width: 2;
+  filter: drop-shadow(0 1px 2px rgba(16, 24, 40, .12));
+}
+.pert-svg .pnode.crit rect { stroke: var(--danger); fill: #fdeef0; }
+.pert-svg .pnode-code { font-size: 15px; font-weight: 700; fill: var(--text); }
+.pert-svg .pnode.crit .pnode-code { fill: var(--danger); }
+.pert-svg .pnode-dur { font-size: 10.5px; fill: var(--muted); }
+.pedge { fill: none; stroke: #8296c0; stroke-width: 1.8; }
+.pedge.critical { stroke: var(--danger); stroke-width: 2.4; }
+.pedge-label { font-size: 10px; font-weight: 700; fill: var(--muted); }
+.pedge-label.critical { fill: var(--danger); }
+
+/* ============================================================
    Responsif
    ============================================================ */
 @media (max-width: 760px) {

@@ -327,7 +327,16 @@ async function main() {
     await waitFor(`document.querySelectorAll('#gantt-content .gbar.critical').length === 0`);
     ok('Toggle Show/Hide Critical Path berfungsi');
 
-    // 11. Tidak boleh ada error JavaScript di halaman
+    // 11. Tab PERT: node + panah, jalur kritis merah
+    await evaluate(`document.querySelector('[data-tab="pert"]').click(); true`);
+    await waitFor(`document.getElementById('tab-pert').classList.contains('active')`);
+    await waitFor(`document.querySelectorAll('#pert-content svg.pert-svg .pnode').length === 2`);
+    await expect(`document.querySelectorAll('#pert-content svg.pert-svg .pedge').length >= 1`, 'Panah dependensi PERT digambar');
+    await expect(`document.querySelectorAll('#pert-content svg.pert-svg .pnode.crit').length === 2`, 'Node jalur kritis merah (A & B kritis)');
+    await expect(`document.querySelectorAll('#pert-content svg.pert-svg .pedge.critical').length === 1`, 'Panah jalur kritis merah');
+    await expect(`document.getElementById('pert-content').innerText.includes('hari kerja')`, 'Info total durasi proyek tampil');
+
+    // 12. Tidak boleh ada error JavaScript di halaman
     if (pageErrors.length) {
       fail(`Ada error di browser:\n    - ${pageErrors.join('\n    - ')}`);
     }

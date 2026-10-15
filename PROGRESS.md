@@ -13,7 +13,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [x] 6. REST API: CRUD proyek, kegiatan, resource, penugasan + validasi
 - [x] 7. Frontend: manajemen proyek, kegiatan, resource
 - [x] 8. Frontend: Gantt chart + highlight critical path
-- [ ] 9. Frontend: diagram PERT
+- [x] 9. Frontend: diagram PERT
 - [ ] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
 - [ ] 11. Pengujian menyeluruh & perbaikan bug
 - [x] 12. README (instalasi, fitur, placeholder screenshot)
@@ -81,6 +81,16 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   cache critical-path). Smoke test UI diperluas jadi 22 pemeriksaan, lulus (EXIT=0).
   Catatan: `innerText` header tabel berubah jadi huruf besar oleh CSS
   `text-transform`, smoke test memakai `toLowerCase()`.
+- **Tahap 9 selesai (Sesi 2).** File: `public/js/pert.js` (diagram jaringan SVG
+  activity-on-node: layering rank = jarak terpanjang dari sumber, node = kode +
+  durasi dengan tooltip nama+tanggal, panah kurva/elbow berlabel FS/SS+delay,
+  node & panah jalur kritis merah, legenda + info total durasi proyek),
+  `public/index.html` (tab PERT), `public/css/styles.css` (gaya PERT), hook render
+  di `app.js`/`tasks.js`/`projects.js`. Smoke test UI kini 26 pemeriksaan, lulus
+  (EXIT=0).
+- **Status sesi 2 (Prompt 2):** tahap 4, 8, 9 selesai & ter-commit. Tahap 5
+  (test lanjutan), 10 (data contoh + verifikasi 33 hari), 11 (pengujian
+  menyeluruh) menunggu prompt 3.
 
 ## Sesi
 

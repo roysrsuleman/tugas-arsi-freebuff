@@ -32,7 +32,7 @@
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="tasks">✅ Kegiatan</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="resources">👥 Resource</button>
     <button class="tab-btn" role="tab" aria-selected="false" data-tab="gantt">📊 Gantt</button>
-    <!-- Tab PERT ditambahkan pada tahap berikutnya -->
+    <button class="tab-btn" role="tab" aria-selected="false" data-tab="pert">🕸️ PERT</button>
   </nav>
 
   <main class="content">
@@ -93,6 +93,17 @@
       </div>
       <div id="gantt-content"></div>
       <div id="gantt-analysis"></div>
+    </section>
+
+    <!-- ===== Tab PERT ===== -->
+    <section id="tab-pert" class="tab-panel" role="tabpanel">
+      <div class="panel-head">
+        <div>
+          <h2>Diagram PERT</h2>
+          <p class="muted">Jaringan kegiatan — node = kegiatan (kode + durasi), panah = dependensi; jalur kritis merah.</p>
+        </div>
+      </div>
+      <div id="pert-content"></div>
     </section>
   </main>
 
@@ -262,5 +273,6 @@
   <script src="/js/tasks.js"></script>
   <script src="/js/resources.js"></script>
   <script src="/js/gantt.js"></script>
+  <script src="/js/pert.js"></script>
 </body>
 </html>

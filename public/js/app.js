@@ -141,6 +141,7 @@ async function selectProject(id) {
   renderTasks();
   renderResources();
   renderGantt();
+  renderPert();
 }
 
 /* ---------- Render tab proyek (didefinisikan di projects.js) ---------- */
