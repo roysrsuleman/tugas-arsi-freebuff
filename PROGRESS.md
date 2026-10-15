@@ -16,7 +16,7 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
 - [ ] 9. Frontend: diagram PERT
 - [ ] 10. Data contoh (A-J dan PT XZ) + verifikasi hasil 33 hari
 - [ ] 11. Pengujian menyeluruh & perbaikan bug
-- [ ] 12. README (instalasi, fitur, placeholder screenshot)
+- [x] 12. README (instalasi, fitur, placeholder screenshot)
 
 ## Aturan
 
@@ -55,6 +55,11 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   14 pemeriksaan lulus: CRUD proyek, kalender/libur, tanggal otomatis, toast
   circular, resource + biaya). Tampilan responsif (tabel jadi kartu di layar
   kecil), seluruh teks berbahasa Indonesia. Data uji otomatis dibersihkan.
+- **Tahap 12 selesai.** File: `README.md` (deskripsi, fitur, tech stack, struktur,
+  instalasi `npm install`, menjalankan `npm start`, test `npm test`, ringkasan REST
+  API, bagian Screenshot dengan referensi gambar di `docs/`, lisensi).
+- **Status sesi 1:** tahap 1, 2, 3, 6, 7, 12 selesai & ter-commit. Tahap 4, 5
+  (sebagian), 8, 9, 10, 11 menunggu prompt berikutnya.
 
 ## Sesi
 
