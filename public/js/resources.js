@@ -21,6 +21,7 @@ function renderResources() {
       </div>`;
     container.querySelector('[data-empty-action="go-projects"]')
       .addEventListener('click', () => showTab('projects'));
+    refreshOverviews();
     return;
   }
   if (!state.resources.length) {
@@ -34,6 +35,7 @@ function renderResources() {
       </div>`;
     container.querySelector('[data-empty-action="new-resource"]')
       .addEventListener('click', () => openResourceModal());
+    refreshOverviews();
     return;
   }
 
@@ -66,6 +68,8 @@ function renderResources() {
           </div>
         </article>`).join('')}
     </div>`;
+
+  refreshOverviews();
 }
 
 /* ---------- Form resource ---------- */

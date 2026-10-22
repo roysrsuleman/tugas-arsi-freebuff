@@ -119,6 +119,15 @@ function showTab(name) {
     el.hidden = el.dataset.for !== name;
   });
 
+  // Konten dibatasi 1200px; Gantt & PERT lebar penuh
+  const content = document.querySelector('.content');
+  if (content) content.classList.toggle('wide', name === 'gantt' || name === 'pert');
+
+  // Tautan navigasi cepat di footer
+  document.querySelectorAll('.foot-link').forEach((el) => {
+    el.classList.toggle('active', el.dataset.tab === name);
+  });
+
   setNavOpen(false); // tutup menu mobile setelah pindah tab
 }
 
@@ -171,6 +180,95 @@ async function selectProject(id) {
   renderResources();
   renderGantt();
   renderPert();
+  refreshOverviews();
+}
+
+/* ---------- Ringkasan sidebar & banner statistik ---------- */
+
+/** Rentang jadwal kegiatan proyek aktif (tanggal awal → akhir). */
+function activeScheduleRange() {
+  const dates = state.tasks.flatMap((t) => [t.startDate, t.endDate]).filter(Boolean).sort();
+  return dates.length ? { start: dates[0], end: dates[dates.length - 1] } : null;
+}
+
+/** Posisi hari ini terhadap rentang proyek (0-100) untuk progress bar mini. */
+function timelineProgressPercent(range) {
+  const today = new Date();
+  const now = Date.UTC(today.getFullYear(), today.getMonth(), today.getDate());
+  const start = Date.parse(`${range.start}T00:00:00Z`);
+  const end = Date.parse(`${range.end}T00:00:00Z`);
+  if (!Number.isFinite(start) || !Number.isFinite(end) || end < start) return 0;
+  if (now <= start) return 0;
+  if (now >= end) return 100;
+  return Math.round(((now - start) / (end - start)) * 100);
+}
+
+/** Kartu mini "Proyek aktif" di dasar sidebar. */
+function renderSidebarProject() {
+  const el = document.getElementById('sidebar-project');
+  if (!el) return;
+
+  if (!state.currentProject) {
+    el.innerHTML = `
+      <p class="mini-empty">Belum ada proyek aktif.</p>
+      <button type="button" class="btn ghost small" id="sidebar-seed">
+        <svg class="ic ic-14" aria-hidden="true"><use href="#ic-sparkles"></use></svg>Muat Data Contoh
+      </button>`;
+    const btn = el.querySelector('#sidebar-seed');
+    if (btn) btn.addEventListener('click', () => handle(loadSampleData)());
+    return;
+  }
+
+  const range = activeScheduleRange();
+  const cp = state.criticalPath;
+  const duration = cp && cp.project ? cp.project.durationWorkingDays : null;
+  const pct = range ? timelineProgressPercent(range) : 0;
+
+  el.innerHTML = `
+    <span class="mini-label">Proyek aktif</span>
+    <span class="mini-name" title="${esc(state.currentProject.name)}">${esc(state.currentProject.name)}</span>
+    ${range
+      ? `<span class="mini-dates">${formatShortID(range.start)} – ${formatShortID(range.end)}</span>`
+      : '<span class="mini-dates">Belum ada kegiatan</span>'}
+    <span class="mini-meta">${state.tasks.length} kegiatan${duration !== null ? ` · ${duration} hari kerja` : ''}</span>
+    ${range ? `
+      <div class="mini-progress" role="progressbar" aria-label="Posisi jadwal proyek"
+           aria-valuemin="0" aria-valuemax="100" aria-valuenow="${pct}">
+        <span style="width:${pct}%"></span>
+      </div>` : ''}`;
+}
+
+/** Kartu statistik ringkas di atas halaman Proyek. */
+function renderStatsBanner() {
+  const el = document.getElementById('stats-banner');
+  if (!el) return;
+  const cp = state.criticalPath;
+  const duration = cp && cp.project ? cp.project.durationWorkingDays : null;
+
+  const cards = [
+    { icon: '#ic-folder', num: state.projects.length, cap: 'Jumlah Proyek' },
+    { icon: '#ic-check-square', num: state.tasks.length, cap: 'Kegiatan proyek aktif' },
+    { icon: '#ic-users', num: state.resources.length, cap: 'Resource proyek aktif' },
+    { icon: '#ic-gantt', num: duration !== null ? `${duration} hari` : '—', cap: 'Durasi proyek aktif' },
+  ];
+
+  el.innerHTML = cards.map((c) => `
+    <div class="stat-card">
+      <span class="stat-ic"><svg class="ic ic-18" aria-hidden="true"><use href="${c.icon}"></use></svg></span>
+      <div>
+        <span class="stat-num">${c.num}</span>
+        <span class="stat-cap">${c.cap}</span>
+      </div>
+    </div>`).join('');
+}
+
+/** Muat ulang ringkasan sidebar & statistik (memakai cache critical-path bila ada). */
+async function refreshOverviews() {
+  if (state.currentProjectId) {
+    try { await ensureCriticalPath(); } catch (_) { /* ringkasan tetap dirender tanpa durasi */ }
+  }
+  renderSidebarProject();
+  renderStatsBanner();
 }
 
 /* ---------- Render tab proyek (didefinisikan di projects.js) ---------- */
@@ -230,6 +328,19 @@ function init() {
   bindTaskEvents();
   bindResourceEvents();
   bindGanttEvents();
+
+  // Navigasi cepat di footer
+  document.querySelectorAll('.foot-link').forEach((btn) => {
+    btn.addEventListener('click', () => showTab(btn.dataset.tab));
+  });
+
+  // Bayangan halus pada top bar saat halaman di-scroll
+  const topbarEl = document.querySelector('.topbar');
+  if (topbarEl) {
+    const syncTopbarShadow = () => topbarEl.classList.toggle('scrolled', window.scrollY > 4);
+    window.addEventListener('scroll', syncTopbarShadow, { passive: true });
+    syncTopbarShadow();
+  }
 
   const savedTab = localStorage.getItem('mini-gantt-active-tab');
   showTab(savedTab && document.getElementById(`tab-${savedTab}`) ? savedTab : 'projects');

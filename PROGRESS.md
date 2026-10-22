@@ -152,6 +152,36 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   sisa 15 Okt 2026 sehingga seed "skipped" dan proyek aktif bukan A-J; DB direset ke
   kondisi pristin lalu lulus. `→` tetap dipakai sebagai teks notasi jalur (bukan emoji).
 
+- **Polish UI (Sesi 4 lanjutan — branch `redesign-ui`).** Hanya tampilan; logika/API/
+  algoritma/DB/ID dipertahankan. File: `public/index.html` (footer profesional 3 kolom:
+  brand + deskripsi, tautan navigasi cepat yang berfungsi pindah halaman, badge
+  teknologi + tautan Repositori GitHub `target="_blank" rel="noopener"` berikon SVG;
+  baris bawah hak cipta + v1.0; teks lama "v1.0 · Node.js..." di sidebar diganti kartu
+  mini `#sidebar-project`; wadah `#stats-banner`), `public/css/styles.css` (footer
+  + sticky footer, kartu mini sidebar dgn progress bar, banner statistik kartu ikon
+  lingkaran aksen, kalender 2 kolom di layar lebar, top bar putih solid + bayangan
+  halus saat scroll, latar slate-50, radius kartu 12px, garis vertikal item menu
+  aktif, garis aksen di atas kartu proyek aktif, konten 1200px + `.content.wide` untuk
+  Gantt/PERT, responsif footer/kalender satu kolom ≤900px), `public/js/app.js`
+  (`renderSidebarProject` — nama proyek aktif, rentang tanggal, jumlah kegiatan,
+  total durasi hari kerja dari cache critical-path, progress bar posisi jadwal;
+  `renderStatsBanner` — 4 kartu statistik; `refreshOverviews` dipanggil dari
+  `selectProject`/`renderTasks`/`renderResources`; `showTab` menandai tautan footer
+  aktif + konten wide; listener scroll top bar; klik tautan footer),
+  `public/js/projects.js` (tata letak kalender jadi `.cal-grid` dua kolom),
+  `public/js/{tasks,resources}.js` (panggil `refreshOverviews`). Verifikasi: `npm test`
+  53/53 lulus (EXIT=0), smoke UI Chrome headless 36/36 (EXIT=0; Gantt A-J tetap
+  10 bar + 33 hari + jalur B-E-H-J + 4 bar merah, tanpa error JavaScript), probe
+  polish 31/31 (EXIT=0: footer 3 kolom → 1 kolom ≤900px + sticky footer + tautan
+  GitHub valid, kartu mini sidebar berisi nama/tanggal/"10 kegiatan · 33 hari kerja"/
+  progress aria, statistik 4 kartu benar, kalender 2 kolom + pemisah, top bar putih
+  solid + `.scrolled`, konten 1200px & Gantt/PERT lebar penuh di 1366/1920/800,
+  sidebar off-canvas 800px). Catatan: smoke pertama gagal karena database masih
+  berisi sisa data contoh (kemungkinan percobaan manual antar sesi) — DB direset
+  pristin; dua kegagalan probe awal murni bug assertion probe (efek
+  `text-transform: uppercase` pada `innerText` & timing event scroll), aplikasi tidak
+  diubah. Belum di-push sesuai permintaan.
+
 ## Sesi
 
 - **Sesi 1 (Prompt 1 — Fitur 1-3):** mengerjakan tahap yang terkait fitur Proyek,

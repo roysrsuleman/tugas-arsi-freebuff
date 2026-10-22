@@ -27,6 +27,7 @@ function renderTasks() {
       </div>`;
     container.querySelector('[data-empty-action="go-projects"]')
       .addEventListener('click', () => showTab('projects'));
+    refreshOverviews();
     return;
   }
   if (!state.tasks.length) {
@@ -40,6 +41,7 @@ function renderTasks() {
       </div>`;
     container.querySelector('[data-empty-action="new-task"]')
       .addEventListener('click', () => openTaskModal());
+    refreshOverviews();
     return;
   }
 
@@ -100,6 +102,8 @@ function renderTasks() {
       Total biaya = durasi (hari kerja) × jumlah tarif resource yang ditugaskan.
       Ubah kegiatan → kegiatan turunannya dihitung ulang otomatis.
     </p>`;
+
+  refreshOverviews();
 }
 
 /* ---------- Form kegiatan ---------- */

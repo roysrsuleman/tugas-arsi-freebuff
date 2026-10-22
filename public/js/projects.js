@@ -129,48 +129,54 @@ function renderCalendarPanel() {
   const mode = project.calendar.weekendMode;
 
   panel.innerHTML = `
-    <div class="cal-section">
-      <h3>Hari Weekend</h3>
-      <div class="day-checks">
-        ${DAY_NAMES_ID.map((day, idx) => `
-          <label class="day-check">
-            <input type="checkbox" name="weekend-day" value="${idx}" ${weekendDays.includes(idx) ? 'checked' : ''}>
-            ${day}
-          </label>`).join('')}
+    <div class="cal-grid">
+      <div class="cal-col">
+        <div class="cal-section">
+          <h3>Hari Weekend</h3>
+          <div class="day-checks">
+            ${DAY_NAMES_ID.map((day, idx) => `
+              <label class="day-check">
+                <input type="checkbox" name="weekend-day" value="${idx}" ${weekendDays.includes(idx) ? 'checked' : ''}>
+                ${day}
+              </label>`).join('')}
+          </div>
+        </div>
+
+        <div class="cal-section">
+          <h3>Perlakuan Weekend</h3>
+          <div class="radio-row">
+            <label class="radio-pill">
+              <input type="radio" name="weekend-mode" value="off" ${mode === 'off' ? 'checked' : ''}>
+              <svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar-off"></use></svg>Weekend libur (tidak dihitung durasi)
+            </label>
+            <label class="radio-pill">
+              <input type="radio" name="weekend-mode" value="work" ${mode === 'work' ? 'checked' : ''}>
+              <svg class="ic ic-14" aria-hidden="true"><use href="#ic-briefcase"></use></svg>Tetap bekerja (weekend = hari kerja)
+            </label>
+          </div>
+        </div>
+      </div>
+
+      <div class="cal-col">
+        <div class="cal-section">
+          <h3>Hari Libur Custom</h3>
+          <div class="inline-form">
+            <input type="date" id="holiday-date" aria-label="Tanggal hari libur">
+            <input type="text" id="holiday-label" class="cal-text" placeholder="Keterangan (cth: HUT RI)" maxlength="120">
+            <select id="holiday-type" class="cal-select" aria-label="Tipe hari libur">
+              <option value="one_off">Sekali saja</option>
+              <option value="recurring">Berulang tiap tahun</option>
+            </select>
+            <button type="button" class="btn ghost" id="btn-add-holiday">
+              <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Tambah
+            </button>
+          </div>
+          <div id="holiday-list" class="list-rows"></div>
+        </div>
       </div>
     </div>
 
-    <div class="cal-section">
-      <h3>Perlakuan Weekend</h3>
-      <div class="radio-row">
-        <label class="radio-pill">
-          <input type="radio" name="weekend-mode" value="off" ${mode === 'off' ? 'checked' : ''}>
-          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar-off"></use></svg>Weekend libur (tidak dihitung durasi)
-        </label>
-        <label class="radio-pill">
-          <input type="radio" name="weekend-mode" value="work" ${mode === 'work' ? 'checked' : ''}>
-          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-briefcase"></use></svg>Tetap bekerja (weekend = hari kerja)
-        </label>
-      </div>
-    </div>
-
-    <div class="cal-section">
-      <h3>Hari Libur Custom</h3>
-      <div class="inline-form">
-        <input type="date" id="holiday-date" aria-label="Tanggal hari libur">
-        <input type="text" id="holiday-label" class="cal-text" placeholder="Keterangan (cth: HUT RI)" maxlength="120">
-        <select id="holiday-type" class="cal-select" aria-label="Tipe hari libur">
-          <option value="one_off">Sekali saja</option>
-          <option value="recurring">Berulang tiap tahun</option>
-        </select>
-        <button type="button" class="btn ghost" id="btn-add-holiday">
-          <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Tambah
-        </button>
-      </div>
-      <div id="holiday-list" class="list-rows"></div>
-    </div>
-
-    <div class="cal-section" style="display:flex; justify-content:flex-end;">
+    <div class="cal-section cal-actions" style="display:flex; justify-content:flex-end;">
       <button type="button" class="btn primary" id="btn-save-calendar">
         <svg class="ic" aria-hidden="true"><use href="#ic-save"></use></svg>Simpan Pengaturan Kalender
       </button>
