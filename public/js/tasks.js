@@ -19,17 +19,27 @@ function renderTasks() {
   if (!state.currentProjectId) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">✅</span>
-        Pilih atau buat <strong>proyek</strong> terlebih dahulu untuk mengelola kegiatan.
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-check-square"></use></svg></span>
+        <p>Pilih atau buat <strong>proyek</strong> terlebih dahulu untuk mengelola kegiatan.</p>
+        <button type="button" class="btn primary" data-empty-action="go-projects">
+          <svg class="ic" aria-hidden="true"><use href="#ic-folder"></use></svg>Buka tab Proyek
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="go-projects"]')
+      .addEventListener('click', () => showTab('projects'));
     return;
   }
   if (!state.tasks.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">🗒️</span>
-        Belum ada kegiatan di proyek ini. Klik <strong>＋ Kegiatan Baru</strong> untuk menambahkan.
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-check-square"></use></svg></span>
+        <p>Belum ada kegiatan di proyek ini. Klik <strong>Kegiatan Baru</strong> untuk menambahkan.</p>
+        <button type="button" class="btn primary" data-empty-action="new-task">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Kegiatan Baru
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="new-task"]')
+      .addEventListener('click', () => openTaskModal());
     return;
   }
 
@@ -60,8 +70,14 @@ function renderTasks() {
         <td data-label="Biaya" class="numeric cell-strong">${formatRp(t.cost)}</td>
         <td data-label="Aksi">
           <div class="row-btns">
-            <button class="btn ghost small" data-action="edit" data-id="${t.id}">Edit</button>
-            <button class="btn danger small" data-action="delete" data-id="${t.id}">Hapus</button>
+            <button class="icon-btn" data-action="edit" data-id="${t.id}"
+                    aria-label="Edit kegiatan ${esc(t.code)} — ${esc(t.name)}" title="Edit">
+              <svg class="ic ic-14" aria-hidden="true"><use href="#ic-pencil"></use></svg>
+            </button>
+            <button class="icon-btn" data-action="delete" data-id="${t.id}"
+                    aria-label="Hapus kegiatan ${esc(t.code)} — ${esc(t.name)}" title="Hapus">
+              <svg class="ic ic-14" aria-hidden="true"><use href="#ic-trash"></use></svg>
+            </button>
           </div>
         </td>
       </tr>`;
@@ -72,8 +88,9 @@ function renderTasks() {
       <table>
         <thead>
           <tr>
-            <th>Kode</th><th>Nama</th><th>Durasi</th><th>Prioritas</th><th>Warna</th>
-            <th>Pendahulu</th><th>Resource</th><th>Mulai</th><th>Selesai</th><th>Biaya</th><th>Aksi</th>
+            <th>Kode</th><th>Nama</th><th class="numeric">Durasi</th><th>Prioritas</th><th>Warna</th>
+            <th>Pendahulu</th><th>Resource</th><th class="numeric">Mulai</th><th class="numeric">Selesai</th>
+            <th class="numeric">Biaya</th><th>Aksi</th>
           </tr>
         </thead>
         <tbody>${rows}</tbody>
@@ -170,7 +187,9 @@ function renderPredRows() {
         <input type="number" class="pred-delay" min="0" max="3650" value="${p.delay || 0}"
                aria-label="Delay (hari kerja)" title="Delay dalam hari kerja">
         <span class="hint" style="margin:0;">hari</span>
-        <button type="button" class="icon-btn" data-remove-pred="${i}" aria-label="Hapus pendahulu">✕</button>
+        <button type="button" class="icon-btn" data-remove-pred="${i}" aria-label="Hapus pendahulu">
+          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-x"></use></svg>
+        </button>
       </div>`;
   }).join('');
 

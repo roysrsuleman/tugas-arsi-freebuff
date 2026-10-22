@@ -6,126 +6,185 @@
   <title>Mini Gantt Project — Penjadwalan Proyek</title>
   <link rel="icon" href="data:,">
   <meta name="description" content="Mini Gantt Project: aplikasi web penjadwalan proyek pengembangan perangkat lunak sederhana.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;display=swap">
   <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-  <!-- ===== Header ===== -->
-  <header class="app-header">
-    <div class="brand">
-      <span class="brand-icon" aria-hidden="true">📅</span>
-      <div class="brand-text">
-        <h1>Mini Gantt Project</h1>
-        <p>Penjadwalan proyek pengembangan perangkat lunak</p>
+  <!-- ===== Sprite ikon SVG (gaya Lucide, stroke tipis) ===== -->
+  <svg xmlns="http://www.w3.org/2000/svg" style="display:none" aria-hidden="true">
+    <symbol id="ic-menu" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="4" y1="6.5" x2="20" y2="6.5"/><line x1="4" y1="12" x2="20" y2="12"/><line x1="4" y1="17.5" x2="20" y2="17.5"/></symbol>
+    <symbol id="ic-x" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="6.5" y1="6.5" x2="17.5" y2="17.5"/><line x1="17.5" y1="6.5" x2="6.5" y2="17.5"/></symbol>
+    <symbol id="ic-plus" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5.5" x2="12" y2="18.5"/><line x1="5.5" y1="12" x2="18.5" y2="12"/></symbol>
+    <symbol id="ic-gantt" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="3.5" y1="4.5" x2="3.5" y2="19.5"/><rect x="6.5" y="5" width="10" height="3.2" rx="1.6"/><rect x="9.5" y="10.4" width="11" height="3.2" rx="1.6"/><rect x="6.5" y="15.8" width="8" height="3.2" rx="1.6"/></symbol>
+    <symbol id="ic-folder" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M3 7.5A2.5 2.5 0 0 1 5.5 5h3.2l2 2h7.8A2.5 2.5 0 0 1 21 9.5v7A2.5 2.5 0 0 1 18.5 19h-13A2.5 2.5 0 0 1 3 16.5z"/></symbol>
+    <symbol id="ic-check-square" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4" width="16" height="16" rx="3"/><path d="m8.5 12.2 2.6 2.6 4.6-5.2"/></symbol>
+    <symbol id="ic-users" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M15.5 19.5v-1.2a3.8 3.8 0 0 0-3.8-3.8H6.8A3.8 3.8 0 0 0 3 18.3v1.2"/><circle cx="9.2" cy="8" r="3.4"/><path d="M16.6 4.9a3.4 3.4 0 0 1 0 6.3"/><path d="M18.2 14.7a3.8 3.8 0 0 1 2.8 3.7v1.1"/></symbol>
+    <symbol id="ic-network" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5" cy="6" r="2.3"/><circle cx="19" cy="12" r="2.3"/><circle cx="5" cy="18" r="2.3"/><path d="M7.3 6.6 16.7 11.2"/><path d="M7.3 17.4 16.7 12.8"/></symbol>
+    <symbol id="ic-sparkles" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="m11 4.5 1.5 4 4 1.5-4 1.5-1.5 4-1.5-4-4-1.5 4-1.5z"/><path d="m17.8 14.6.8 2 2 .8-2 .8-.8 2-.8-2-2-.8 2-.8z"/></symbol>
+    <symbol id="ic-eye" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M2.8 12S6.2 5.8 12 5.8 21.2 12 21.2 12 17.8 18.2 12 18.2 2.8 12 2.8 12z"/><circle cx="12" cy="12" r="2.8"/></symbol>
+    <symbol id="ic-eye-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4.2 20 20.2"/><path d="M9.7 6.3A9.6 9.6 0 0 1 12 5.8c5.8 0 9.2 6.2 9.2 6.2a17.8 17.8 0 0 1-2.9 3.6"/><path d="M6.4 8.4A17.5 17.5 0 0 0 2.8 12S6.2 18.2 12 18.2a9.7 9.7 0 0 0 3.4-.6"/><path d="M9.9 9.9a2.9 2.9 0 0 0 4.1 4.1"/></symbol>
+    <symbol id="ic-pencil" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 19.5h4L19.4 8.6a2.1 2.1 0 0 0-3-3L5.5 16.5z"/><line x1="14.6" y1="6.4" x2="17.6" y2="9.4"/></symbol>
+    <symbol id="ic-trash" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 7h15"/><path d="M9.5 7V5.4A1.4 1.4 0 0 1 10.9 4h2.2a1.4 1.4 0 0 1 1.4 1.4V7"/><path d="M6.5 7l.9 11.6A2 2 0 0 0 9.4 20.5h5.2a2 2 0 0 0 2-1.9L17.5 7"/><line x1="10.2" y1="10.8" x2="10.2" y2="16.8"/><line x1="13.8" y1="10.8" x2="13.8" y2="16.8"/></symbol>
+    <symbol id="ic-calendar" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="15" rx="2.5"/><line x1="3.5" y1="10" x2="20.5" y2="10"/><line x1="8" y1="3.5" x2="8" y2="7"/><line x1="16" y1="3.5" x2="16" y2="7"/></symbol>
+    <symbol id="ic-calendar-off" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 5.5H18a2.5 2.5 0 0 1 2.5 2.5v8.6"/><rect x="3.5" y="5.5" width="17" height="15" rx="2.5" transform="translate(0 1.5)"/><line x1="3.5" y1="11.5" x2="20.5" y2="11.5"/><path d="M5 4.5 20 19.5"/></symbol>
+    <symbol id="ic-briefcase" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="7.5" width="17" height="12" rx="2.5"/><path d="M9 7.5V6.2A1.7 1.7 0 0 1 10.7 4.5h2.6A1.7 1.7 0 0 1 15 6.2v1.3"/><line x1="3.5" y1="12.5" x2="20.5" y2="12.5"/></symbol>
+    <symbol id="ic-building" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5.5" y="4" width="13" height="16" rx="1.6"/><path d="M9 8h1.6M13.4 8H15M9 12h1.6M13.4 12H15"/><path d="M10.4 20v-3.4h3.2V20"/></symbol>
+    <symbol id="ic-list" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><line x1="8.5" y1="6.5" x2="20" y2="6.5"/><line x1="8.5" y1="12" x2="20" y2="12"/><line x1="8.5" y1="17.5" x2="20" y2="17.5"/><circle cx="4.7" cy="6.5" r="1.1"/><circle cx="4.7" cy="12" r="1.1"/><circle cx="4.7" cy="17.5" r="1.1"/></symbol>
+    <symbol id="ic-mail" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="5.5" width="17" height="13" rx="2.2"/><path d="m4.5 7.5 7.5 5.6 7.5-5.6"/></symbol>
+    <symbol id="ic-phone" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M7.4 3.8h2.9l1.4 3.7-2 1.4a12.4 12.4 0 0 0 5.4 5.4l1.4-2 3.7 1.4v2.9a2 2 0 0 1-2.1 2A16.7 16.7 0 0 1 5.4 5.9a2 2 0 0 1 2-2.1z"/></symbol>
+    <symbol id="ic-wallet" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7.8A2.3 2.3 0 0 1 6.3 5.5H17V8"/><rect x="3.5" y="8" width="17" height="11.5" rx="2.3"/><circle cx="16.4" cy="13.7" r="1.2"/></symbol>
+    <symbol id="ic-clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="5" y="5" width="14" height="16" rx="2.2"/><path d="M9.2 5V4.2A1.4 1.4 0 0 1 10.6 2.8h2.8A1.4 1.4 0 0 1 14.8 4.2V5z"/><path d="M9 11.5h6M9 15.5h4"/></symbol>
+    <symbol id="ic-save" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M5 4.8h10.4L19.2 8.6V19a.8.8 0 0 1-.8.8H5.8A.8.8 0 0 1 5 19z"/><path d="M8.4 4.8v4.4h6.4V4.8"/><rect x="8" y="13.4" width="8" height="6.4"/></symbol>
+    <symbol id="ic-inbox" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M4.5 13.5H8l1.4 2.6h5.2l1.4-2.6h3.5"/><path d="M6.2 5.5h11.6L20 13v4.6a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V13z"/></symbol>
+    <symbol id="ic-alert-triangle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><path d="M10.7 4.7 3.2 17.8a1.5 1.5 0 0 0 1.3 2.3h15a1.5 1.5 0 0 0 1.3-2.3L13.3 4.7a1.5 1.5 0 0 0-2.6 0z"/><line x1="12" y1="9.5" x2="12" y2="13.5"/><line x1="12" y1="16.6" x2="12" y2="16.61"/></symbol>
+    <symbol id="ic-check-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><path d="m8.4 12.4 2.5 2.5 4.7-5.2"/></symbol>
+    <symbol id="ic-alert-circle" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><line x1="12" y1="7.8" x2="12" y2="12.4"/><line x1="12" y1="15.8" x2="12" y2="15.81"/></symbol>
+    <symbol id="ic-info" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="8.5"/><line x1="12" y1="11" x2="12" y2="16"/><line x1="12" y1="8" x2="12" y2="8.01"/></symbol>
+    <symbol id="ic-table" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="4.8" width="16" height="14.4" rx="2.2"/><line x1="4" y1="9.6" x2="20" y2="9.6"/><line x1="10.5" y1="9.6" x2="10.5" y2="19.2"/></symbol>
+    <symbol id="ic-route" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round"><circle cx="5.5" cy="5.8" r="2.3"/><circle cx="5.5" cy="18.2" r="2.3"/><circle cx="18.5" cy="12" r="2.3"/><path d="M5.5 8.1v7.8"/><path d="M7.8 5.8h4.7a3.5 3.5 0 0 1 3.5 3.5v.5"/><path d="M7.8 18.2h4.7a3.5 3.5 0 0 0 3.5-3.5v-.5"/></symbol>
+    <symbol id="ic-logo" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><rect x="3.5" y="3.5" width="17" height="17" rx="5"/><line x1="7.5" y1="9" x2="16" y2="9"/><line x1="7.5" y1="12.5" x2="13" y2="12.5"/><line x1="7.5" y1="16" x2="15" y2="16"/></symbol>
+  </svg>
+
+  <div class="app-shell">
+    <!-- ===== Backdrop (layar kecil) ===== -->
+    <div class="sidebar-backdrop" id="sidebar-backdrop" hidden></div>
+
+    <!-- ===== Sidebar ===== -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-head">
+        <span class="brand-mark" aria-hidden="true"><svg class="ic ic-18"><use href="#ic-logo"></use></svg></span>
+        <div class="brand-text">
+          <span class="brand-name">Mini Gantt Project</span>
+          <span class="brand-sub">Penjadwalan proyek</span>
+        </div>
+        <button type="button" class="icon-btn sidebar-close" id="sidebar-close" aria-label="Tutup menu navigasi">
+          <svg class="ic" aria-hidden="true"><use href="#ic-x"></use></svg>
+        </button>
       </div>
+
+      <nav class="side-nav" role="tablist" aria-label="Navigasi utama">
+        <button class="tab-btn active" role="tab" aria-selected="true" data-tab="projects">
+          <svg class="ic" aria-hidden="true"><use href="#ic-folder"></use></svg>Proyek
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="tasks">
+          <svg class="ic" aria-hidden="true"><use href="#ic-check-square"></use></svg>Kegiatan
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="resources">
+          <svg class="ic" aria-hidden="true"><use href="#ic-users"></use></svg>Resource
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="gantt">
+          <svg class="ic" aria-hidden="true"><use href="#ic-gantt"></use></svg>Gantt
+        </button>
+        <button class="tab-btn" role="tab" aria-selected="false" data-tab="pert">
+          <svg class="ic" aria-hidden="true"><use href="#ic-network"></use></svg>PERT
+        </button>
+      </nav>
+
+      <div class="sidebar-foot">v1.0 · Node.js + Express + SQLite</div>
+    </aside>
+
+    <!-- ===== Kolom utama ===== -->
+    <div class="main-col">
+      <!-- Top bar tipis: judul halaman + proyek aktif + aksi utama -->
+      <header class="topbar">
+        <button type="button" class="icon-btn menu-toggle" id="menu-toggle" aria-label="Buka menu navigasi" aria-expanded="false" aria-controls="sidebar">
+          <svg class="ic" aria-hidden="true"><use href="#ic-menu"></use></svg>
+        </button>
+        <h2 class="page-title" id="page-title">Proyek</h2>
+        <div class="topbar-right">
+          <div class="project-picker">
+            <label for="project-select" class="picker-label">Proyek aktif</label>
+            <select id="project-select">
+              <option value="">— Pilih proyek —</option>
+            </select>
+          </div>
+          <div class="topbar-actions">
+            <button class="btn ghost" id="btn-seed" data-for="projects">
+              <svg class="ic" aria-hidden="true"><use href="#ic-sparkles"></use></svg>Muat Data Contoh
+            </button>
+            <button class="btn primary" id="btn-new-project" data-for="projects">
+              <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Proyek Baru
+            </button>
+            <button class="btn primary" id="btn-new-task" data-for="tasks" hidden>
+              <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Kegiatan Baru
+            </button>
+            <button class="btn primary" id="btn-new-resource" data-for="resources" hidden>
+              <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Resource Baru
+            </button>
+            <button class="btn ghost" id="btn-critical" data-for="gantt" aria-pressed="false" disabled hidden>
+              <svg class="ic" aria-hidden="true"><use href="#ic-eye"></use></svg>
+              <span class="btn-label">Tampilkan Critical Path</span>
+            </button>
+          </div>
+        </div>
+      </header>
+
+      <main class="content">
+        <!-- ===== Tab Proyek ===== -->
+        <section id="tab-projects" class="tab-panel active" role="tabpanel">
+          <p class="page-sub">Kelola proyek dan pengaturan kalender kerjanya.</p>
+
+          <div id="project-cards" class="card-grid"></div>
+
+          <!-- Pengaturan kalender proyek aktif -->
+          <div class="section-head" id="calendar-head">
+            <div>
+              <h3>Pengaturan Kalender</h3>
+              <p class="muted">Weekend &amp; hari libur proyek aktif. Perubahan kalender menghitung ulang seluruh jadwal.</p>
+            </div>
+          </div>
+          <div id="calendar-panel" class="card calendar-card"></div>
+        </section>
+
+        <!-- ===== Tab Kegiatan ===== -->
+        <section id="tab-tasks" class="tab-panel" role="tabpanel">
+          <p class="page-sub">Tanggal mulai &amp; selesai dihitung otomatis dari durasi, dependensi, weekend, dan hari libur.</p>
+          <div id="tasks-content"></div>
+        </section>
+
+        <!-- ===== Tab Resource ===== -->
+        <section id="tab-resources" class="tab-panel" role="tabpanel">
+          <p class="page-sub">Tugaskan resource ke kegiatan untuk menghitung biaya (durasi × tarif).</p>
+          <div id="resources-content"></div>
+        </section>
+
+        <!-- ===== Tab Gantt ===== -->
+        <section id="tab-gantt" class="tab-panel" role="tabpanel">
+          <p class="page-sub">Bar kegiatan pada timeline — kolom weekend &amp; hari libur diarsir, panah = dependensi.</p>
+          <div id="gantt-content"></div>
+          <div id="gantt-analysis"></div>
+        </section>
+
+        <!-- ===== Tab PERT ===== -->
+        <section id="tab-pert" class="tab-panel" role="tabpanel">
+          <p class="page-sub">Jaringan kegiatan — node = kegiatan (kode + durasi + ES/EF), panah = dependensi; jalur kritis merah.</p>
+          <div id="pert-content"></div>
+        </section>
+      </main>
+
+      <footer class="app-footer">
+        <p>Mini Gantt Project — dibangun dengan Node.js, Express, dan SQLite.</p>
+      </footer>
     </div>
-    <div class="project-picker">
-      <label for="project-select">Proyek aktif</label>
-      <select id="project-select">
-        <option value="">— Pilih proyek —</option>
-      </select>
-    </div>
-  </header>
-
-  <!-- ===== Navigasi tab ===== -->
-  <nav class="tabs" role="tablist" aria-label="Navigasi utama">
-    <button class="tab-btn active" role="tab" aria-selected="true" data-tab="projects">📁 Proyek</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="tasks">✅ Kegiatan</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="resources">👥 Resource</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="gantt">📊 Gantt</button>
-    <button class="tab-btn" role="tab" aria-selected="false" data-tab="pert">🕸️ PERT</button>
-  </nav>
-
-  <main class="content">
-    <!-- ===== Tab Proyek ===== -->
-    <section id="tab-projects" class="tab-panel active" role="tabpanel">
-      <div class="panel-head">
-        <div>
-          <h2>Daftar Proyek</h2>
-          <p class="muted">Kelola proyek dan pengaturan kalender kerjanya.</p>
-        </div>
-        <div class="panel-head-actions">
-          <button class="btn ghost" id="btn-seed">🎲 Muat Data Contoh</button>
-          <button class="btn primary" id="btn-new-project">＋ Proyek Baru</button>
-        </div>
-      </div>
-
-      <div id="project-cards" class="card-grid"></div>
-
-      <!-- Pengaturan kalender proyek aktif -->
-      <div class="panel-head" id="calendar-head">
-        <div>
-          <h2>Pengaturan Kalender</h2>
-          <p class="muted">Weekend &amp; hari libur proyek aktif. Perubahan kalender menghitung ulang seluruh jadwal.</p>
-        </div>
-      </div>
-      <div id="calendar-panel" class="card calendar-card"></div>
-    </section>
-
-    <!-- ===== Tab Kegiatan ===== -->
-    <section id="tab-tasks" class="tab-panel" role="tabpanel">
-      <div class="panel-head">
-        <div>
-          <h2>Daftar Kegiatan</h2>
-          <p class="muted">Tanggal mulai &amp; selesai dihitung otomatis dari durasi, dependensi, weekend, dan hari libur.</p>
-        </div>
-        <button class="btn primary" id="btn-new-task">＋ Kegiatan Baru</button>
-      </div>
-      <div id="tasks-content"></div>
-    </section>
-
-    <!-- ===== Tab Resource ===== -->
-    <section id="tab-resources" class="tab-panel" role="tabpanel">
-      <div class="panel-head">
-        <div>
-          <h2>Daftar Resource / Anggota Tim</h2>
-          <p class="muted">Tugaskan resource ke kegiatan untuk menghitung biaya (durasi × tarif).</p>
-        </div>
-        <button class="btn primary" id="btn-new-resource">＋ Resource Baru</button>
-      </div>
-      <div id="resources-content"></div>
-    </section>
-
-    <!-- ===== Tab Gantt ===== -->
-    <section id="tab-gantt" class="tab-panel" role="tabpanel">
-      <div class="panel-head">
-        <div>
-          <h2>Gantt Chart</h2>
-          <p class="muted">Bar kegiatan pada timeline — kolom weekend &amp; hari libur diarsir, panah = dependensi.</p>
-        </div>
-        <button class="btn ghost" id="btn-critical" aria-pressed="false" disabled>🟥 Tampilkan Critical Path</button>
-      </div>
-      <div id="gantt-content"></div>
-      <div id="gantt-analysis"></div>
-    </section>
-
-    <!-- ===== Tab PERT ===== -->
-    <section id="tab-pert" class="tab-panel" role="tabpanel">
-      <div class="panel-head">
-        <div>
-          <h2>Diagram PERT</h2>
-          <p class="muted">Jaringan kegiatan — node = kegiatan (kode + durasi), panah = dependensi; jalur kritis merah.</p>
-        </div>
-      </div>
-      <div id="pert-content"></div>
-    </section>
-  </main>
-
-  <footer class="app-footer">
-    <p>Mini Gantt Project — dibangun dengan Node.js, Express, dan SQLite.</p>
-  </footer>
+  </div>
 
   <!-- ===== Modal: Proyek ===== -->
   <div class="modal-overlay" id="project-modal" hidden>
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="project-modal-title">
       <div class="modal-header">
         <h2 id="project-modal-title">Proyek Baru</h2>
-        <button type="button" class="icon-btn" data-close="project-modal" aria-label="Tutup">✕</button>
+        <button type="button" class="icon-btn" data-close="project-modal" aria-label="Tutup dialog">
+          <svg class="ic" aria-hidden="true"><use href="#ic-x"></use></svg>
+        </button>
       </div>
       <form id="project-form" class="modal-body">
         <input type="hidden" id="project-id">
         <div class="field">
           <label for="project-name">Nama proyek <span class="req">*</span></label>
           <input type="text" id="project-name" maxlength="255" placeholder="cth: Sistem Informasi Akademik" required>
+          <span class="field-error">Nama proyek wajib diisi.</span>
         </div>
         <div class="field-row">
           <div class="field">
@@ -135,6 +194,7 @@
           <div class="field">
             <label for="project-start">Tanggal mulai <span class="req">*</span></label>
             <input type="date" id="project-start" required>
+            <span class="field-error">Tanggal mulai wajib diisi.</span>
           </div>
         </div>
         <div class="field">
@@ -154,7 +214,9 @@
     <div class="modal modal-lg" role="dialog" aria-modal="true" aria-labelledby="task-modal-title">
       <div class="modal-header">
         <h2 id="task-modal-title">Kegiatan Baru</h2>
-        <button type="button" class="icon-btn" data-close="task-modal" aria-label="Tutup">✕</button>
+        <button type="button" class="icon-btn" data-close="task-modal" aria-label="Tutup dialog">
+          <svg class="ic" aria-hidden="true"><use href="#ic-x"></use></svg>
+        </button>
       </div>
       <form id="task-form" class="modal-body">
         <input type="hidden" id="task-id">
@@ -162,16 +224,19 @@
           <div class="field field-sm">
             <label for="task-code">Kode <span class="req">*</span></label>
             <input type="text" id="task-code" maxlength="20" placeholder="A" required>
+            <span class="field-error">Kode wajib diisi.</span>
           </div>
           <div class="field">
             <label for="task-name">Nama kegiatan <span class="req">*</span></label>
             <input type="text" id="task-name" maxlength="200" placeholder="cth: Analisis Kebutuhan" required>
+            <span class="field-error">Nama kegiatan wajib diisi.</span>
           </div>
         </div>
         <div class="field-row">
           <div class="field field-sm">
             <label for="task-duration">Durasi (hari kerja) <span class="req">*</span></label>
             <input type="number" id="task-duration" min="1" max="3650" value="1" required>
+            <span class="field-error">Durasi minimal 1 hari kerja.</span>
           </div>
           <div class="field">
             <label for="task-priority">Prioritas</label>
@@ -191,7 +256,9 @@
           <legend>Dependensi — Kegiatan Pendahulu</legend>
           <p class="hint">FS = mulai setelah pendahulu selesai · SS = mulai bersamaan · Delay dalam hari kerja.</p>
           <div id="pred-rows" class="pred-rows"></div>
-          <button type="button" class="btn ghost" id="btn-add-pred">＋ Tambah pendahulu</button>
+          <button type="button" class="btn ghost" id="btn-add-pred">
+            <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Tambah pendahulu
+          </button>
         </fieldset>
 
         <fieldset class="field-group">
@@ -200,7 +267,9 @@
         </fieldset>
 
         <div class="modal-footer modal-footer-3">
-          <button type="button" class="btn danger" id="btn-delete-task" hidden>Hapus</button>
+          <button type="button" class="btn danger" id="btn-delete-task" hidden>
+            <svg class="ic" aria-hidden="true"><use href="#ic-trash"></use></svg>Hapus
+          </button>
           <span class="spacer"></span>
           <button type="button" class="btn ghost" data-close="task-modal">Batal</button>
           <button type="submit" class="btn primary">Simpan</button>
@@ -214,18 +283,22 @@
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="resource-modal-title">
       <div class="modal-header">
         <h2 id="resource-modal-title">Resource Baru</h2>
-        <button type="button" class="icon-btn" data-close="resource-modal" aria-label="Tutup">✕</button>
+        <button type="button" class="icon-btn" data-close="resource-modal" aria-label="Tutup dialog">
+          <svg class="ic" aria-hidden="true"><use href="#ic-x"></use></svg>
+        </button>
       </div>
       <form id="resource-form" class="modal-body">
         <input type="hidden" id="resource-id">
         <div class="field">
           <label for="resource-name">Nama <span class="req">*</span></label>
           <input type="text" id="resource-name" maxlength="120" placeholder="cth: Budi Santoso" required>
+          <span class="field-error">Nama resource wajib diisi.</span>
         </div>
         <div class="field-row">
           <div class="field">
             <label for="resource-email">Email</label>
             <input type="email" id="resource-email" maxlength="255" placeholder="cth: budi@contoh.com">
+            <span class="field-error">Format email tidak valid.</span>
           </div>
           <div class="field">
             <label for="resource-phone">Telepon</label>
@@ -245,20 +318,25 @@
           <div class="field">
             <label for="resource-rate">Tarif per hari (Rp) <span class="req">*</span></label>
             <input type="number" id="resource-rate" min="0" step="1000" value="0" required>
+            <span class="field-error">Tarif wajib diisi (angka ≥ 0).</span>
           </div>
         </div>
 
         <fieldset class="field-group">
           <legend>Hari Libur Pribadi (opsional)</legend>
           <div class="inline-form">
-            <input type="date" id="resource-dayoff">
-            <button type="button" class="btn ghost" id="btn-add-dayoff">Tambah</button>
+            <input type="date" id="resource-dayoff" aria-label="Tanggal hari libur pribadi">
+            <button type="button" class="btn ghost" id="btn-add-dayoff">
+              <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Tambah
+            </button>
           </div>
           <div id="days-off-chips" class="chips"></div>
         </fieldset>
 
         <div class="modal-footer modal-footer-3">
-          <button type="button" class="btn danger" id="btn-delete-resource" hidden>Hapus</button>
+          <button type="button" class="btn danger" id="btn-delete-resource" hidden>
+            <svg class="ic" aria-hidden="true"><use href="#ic-trash"></use></svg>Hapus
+          </button>
           <span class="spacer"></span>
           <button type="button" class="btn ghost" data-close="resource-modal">Batal</button>
           <button type="submit" class="btn primary">Simpan</button>

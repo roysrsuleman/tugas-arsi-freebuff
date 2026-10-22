@@ -121,6 +121,37 @@ tahap pertama yang belum dicentang.** Jangan mengulang tahap yang sudah selesai.
   terpenuhi: aplikasi berjalan tanpa error fatal, 53 unit test lulus, data contoh
   menghasilkan critical path B-E-H-J = 33 hari, Gantt & PERT tampil benar.
 
+- **Redesign UI (Sesi 4 — permintaan tampilan, bukan tahap baru).** Hanya tampilan;
+  logika bisnis, API, algoritma penjadwalan, database, dan perilaku fitur tidak
+  berubah; semua ID/atribut yang dipakai JS & unit test dipertahankan. File:
+  `public/index.html` (layout baru: sidebar kiri berisi logo + menu Proyek/Kegiatan/
+  Resource/Gantt/PERT dengan item aktif jelas, top bar tipis berisi judul halaman +
+  pemilih proyek + tombol aksi utama per tab, header gradasi biru dihapus, sprite ikon
+  SVG gaya Lucide menggantikan semua emoji, field error di bawah input, font Inter
+  dengan fallback system-ui), `public/css/styles.css` (tulis ulang: token warna slate
+  netral + aksen indigo untuk tombol utama/aktif, merah hanya untuk critical path &
+  hapus, hijau/kuning/abu untuk status; tombol primer/sekunder/bahaya radius 6-8px
+  dengan hover/focus/disabled, tabel header abu huruf kecil + kolom angka rata kanan +
+  aksi ikon, form label-atas + focus ring aksen + error merah, modal overlay gelap,
+  badge pil lembut, toast halus berikon, empty state ikon+teks+tombol; gaya Gantt
+  (toolbar ringkasan, header bulan+tanggal, kolom weekend/libur halus, garis hari ini,
+  bar membulat, panah tipis, bar kritis merah, tooltip gelap), node PERT kartu;
+  responsif: sidebar jadi off-canvas + tombol menu ≤960px, tabel jadi kartu ≤640px,
+  tabel & Gantt scroll horizontal), `public/js/app.js` (judul halaman + visibilitas
+  aksi topbar di `showTab`, toggle sidebar mobile + Escape, ikon pada toast, kelas
+  `form-errors` untuk menampilkan pesan error field), `public/js/{projects,tasks,
+  resources}.js` (emoji → ikon SVG, empty state ber-aksi, tombol aksi tabel jadi ikon
+  ber-`aria-label`), `public/js/gantt.js` (toolbar ringkasan total durasi/rentang/
+  kritis, garis hari ini, label kode di samping bar sempit, tooltip hover berisi kode,
+  nama, mulai, selesai, durasi, resource; badge jalur "Kritis"), `public/js/pert.js`
+  (node = kartu kecil dengan kode, durasi, ES/EF). Verifikasi akhir: `npm test` 53/53
+  lulus (EXIT=0), smoke test UI Chrome headless 36/36 (EXIT=0, tanpa error JavaScript,
+  Gantt A-J: 10 bar + 33 hari + jalur B-E-H-J + 4 bar merah), probe tata letak 25/25
+  (sidebar/topbar/judul tiap tab/toolbar 33 hari/tooltip/PERT ES-EF/off-canvas 800px).
+  Catatan: smoke pertama gagal BUKAN karena kode — database masih berisi proyek seed
+  sisa 15 Okt 2026 sehingga seed "skipped" dan proyek aktif bukan A-J; DB direset ke
+  kondisi pristin lalu lulus. `→` tetap dipakai sebagai teks notasi jalur (bukan emoji).
+
 ## Sesi
 
 - **Sesi 1 (Prompt 1 — Fitur 1-3):** mengerjakan tahap yang terkait fitur Proyek,

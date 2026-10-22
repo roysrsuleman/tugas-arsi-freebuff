@@ -62,23 +62,37 @@ async function renderGantt() {
 
   btn.disabled = !state.currentProjectId || !state.tasks.length;
   btn.setAttribute('aria-pressed', String(ganttCriticalVisible));
-  btn.textContent = ganttCriticalVisible ? '🙈 Sembunyikan Critical Path' : '🟥 Tampilkan Critical Path';
+  const btnLabel = btn.querySelector('.btn-label');
+  if (btnLabel) btnLabel.textContent = ganttCriticalVisible ? 'Sembunyikan Critical Path' : 'Tampilkan Critical Path';
+  const btnUse = btn.querySelector('use');
+  if (btnUse) btnUse.setAttribute('href', ganttCriticalVisible ? '#ic-eye-off' : '#ic-eye');
+  hideGanttTip();
 
   if (!state.currentProjectId) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">📊</span>
-        Pilih atau buat <strong>proyek</strong> terlebih dahulu untuk melihat Gantt chart.
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-gantt"></use></svg></span>
+        <p>Pilih atau buat <strong>proyek</strong> terlebih dahulu untuk melihat Gantt chart.</p>
+        <button type="button" class="btn primary" data-empty-action="go-projects">
+          <svg class="ic" aria-hidden="true"><use href="#ic-folder"></use></svg>Buka tab Proyek
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="go-projects"]')
+      .addEventListener('click', () => showTab('projects'));
     analysis.innerHTML = '';
     return;
   }
   if (!state.tasks.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">📊</span>
-        Belum ada kegiatan. Tambahkan kegiatan di tab <strong>Kegiatan</strong> terlebih dahulu.
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-gantt"></use></svg></span>
+        <p>Belum ada kegiatan. Tambahkan kegiatan di tab <strong>Kegiatan</strong> terlebih dahulu.</p>
+        <button type="button" class="btn primary" data-empty-action="new-task">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Kegiatan Baru
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="new-task"]')
+      .addEventListener('click', () => openTaskModal());
     analysis.innerHTML = '';
     return;
   }
@@ -89,8 +103,8 @@ async function renderGantt() {
   } catch (err) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">⚠️</span>
-        ${esc(err.message)}
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-alert-triangle"></use></svg></span>
+        <p>${esc(err.message)}</p>
       </div>`;
     analysis.innerHTML = '';
     return;
@@ -114,6 +128,10 @@ async function renderGantt() {
   const idx = (iso) => dayIndexMap.has(iso) ? dayIndexMap.get(iso)
     : Math.round((ganttParse(iso) - rangeStart) / 86400000);
 
+  // Penanda hari ini (bila berada di rentang timeline)
+  const todayIso = ganttIso(new Date());
+  const todayIdx = dayIndexMap.has(todayIso) ? dayIndexMap.get(todayIso) : -1;
+
   // --- header bulan + hari ---
   const monthSegments = [];
   for (const iso of days) {
@@ -135,7 +153,8 @@ async function renderGantt() {
     const cls = flag.holiday ? 'gday hol' : flag.weekend ? 'gday we' : 'gday';
     const title = flag.holiday ? (flag.holiday.label || 'Hari libur') : (flag.weekend ? 'Weekend' : '');
     const d = ganttParse(iso);
-    return `<div class="${cls}" style="left:${i * GANTT_COL_W}px; width:${GANTT_COL_W}px" title="${esc(title)}">
+    const todayCls = iso === todayIso ? ' today' : '';
+    return `<div class="${cls}${todayCls}" style="left:${i * GANTT_COL_W}px; width:${GANTT_COL_W}px" title="${esc(title)}">
       <span class="gd-num">${d.getDate()}</span><span class="gd-wd">${GANTT_WD[d.getDay()]}</span>
     </div>`;
   }).join('');
@@ -165,13 +184,20 @@ async function renderGantt() {
 
   const barsHtml = tasks.map((t) => {
     const left = idx(t.startDate) * GANTT_COL_W + 2;
-    const width = (idx(t.endDate) - idx(t.startDate) + 1) * GANTT_COL_W - 4;
+    const width = Math.max((idx(t.endDate) - idx(t.startDate) + 1) * GANTT_COL_W - 4, 12);
     const top = rowIndex.get(t.id) * GANTT_ROW_H + 7;
     const crit = criticalIds.has(t.id) && ganttCriticalVisible ? ' critical' : '';
-    const title = `${t.code} — ${t.name}\n${formatDateID(t.startDate)} s/d ${formatDateID(t.endDate)} (${t.duration} hari kerja)`;
-    return `<div class="gbar${crit}" data-task-id="${t.id}" title="${esc(title)}"
-      style="left:${left}px; width:${Math.max(width, 12)}px; top:${top}px; background:${esc(t.color)}">${esc(t.code)}</div>`;
+    const inside = width >= 30; // bar sempit -> label kode di samping bar
+    const bar = `<div class="gbar${crit}" data-task-id="${t.id}"
+      style="left:${left}px; width:${width}px; top:${top}px; background:${esc(t.color)}">${inside ? esc(t.code) : ''}</div>`;
+    const out = inside ? '' : `<span class="gbar-out${crit ? ' is-critical' : ''}" data-task-id="${t.id}"
+      style="left:${left + width + 5}px; top:${top}px">${esc(t.code)}</span>`;
+    return bar + out;
   }).join('');
+
+  const todayHtml = todayIdx >= 0
+    ? `<div class="gtoday" style="left:${todayIdx * GANTT_COL_W + GANTT_COL_W / 2}px"></div>`
+    : '';
 
   // --- panah dependensi (SVG overlay) ---
   const linkParts = [];
@@ -213,11 +239,21 @@ async function renderGantt() {
     }
   }
 
+  const critCount = cp.tasks.filter((t) => t.isCritical).length;
+  const toolbar = `
+    <div class="gantt-toolbar">
+      <div class="gt-stat"><span class="gt-label">Total durasi</span><span class="gt-value">${cp.project.durationWorkingDays} hari kerja</span></div>
+      <div class="gt-stat"><span class="gt-label">Rentang proyek</span><span class="gt-value">${formatShortID(cp.project.startDate)} – ${formatShortID(cp.project.endDate)}</span></div>
+      <div class="gt-stat"><span class="gt-label">Kegiatan kritis</span><span class="gt-value">${critCount} dari ${cp.tasks.length}</span></div>
+    </div>`;
+
   container.innerHTML = `
+    ${toolbar}
     <div class="gantt-wrap">
       <div class="gantt-left">
         <div class="gantt-cols gl-head">
-          <span>Kode</span><span>Kegiatan</span><span>Durasi</span><span>Mulai</span><span>Selesai</span><span>Resource</span>
+          <span class="gl-code">Kode</span><span class="gl-name">Kegiatan</span><span class="gl-dur">Durasi</span>
+          <span class="gl-date">Mulai</span><span class="gl-date">Selesai</span><span class="gl-res">Resource</span>
         </div>
         ${leftRows}
       </div>
@@ -228,14 +264,15 @@ async function renderGantt() {
         </div>
         <div class="gantt-plot" style="width:${totalW}px; height:${plotH}px">
           ${colsHtml}
+          ${todayHtml}
           ${barsHtml}
           <svg class="glinks" width="${totalW}" height="${plotH}">
             <defs>
               <marker id="arw" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M0,0 L10,5 L0,10 z" fill="#8296c0"/>
+                <path d="M0,0 L10,5 L0,10 z" fill="#94a3b8"/>
               </marker>
               <marker id="arw-crit" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
-                <path d="M0,0 L10,5 L0,10 z" fill="#d64550"/>
+                <path d="M0,0 L10,5 L0,10 z" fill="#dc2626"/>
               </marker>
             </defs>
             ${linkParts.join('')}
@@ -244,9 +281,9 @@ async function renderGantt() {
       </div>
     </div>
     <div class="gantt-legend">
-      <span class="lg"><span class="sw" style="background:#e6eaf1"></span> Weekend</span>
-      <span class="lg"><span class="sw" style="background:#ffe2bd"></span> Hari libur</span>
-      <span class="lg"><span class="sw" style="background:#d64550"></span> Kegiatan kritis (saat tombol aktif)</span>
+      <span class="lg"><span class="sw sw-we"></span> Weekend</span>
+      <span class="lg"><span class="sw sw-hol"></span> Hari libur</span>
+      <span class="lg"><span class="sw sw-crit"></span> Kegiatan kritis (saat tombol aktif)</span>
       <span class="lg">→ Panah = dependensi (FS/SS + delay)</span>
     </div>`;
 
@@ -279,7 +316,7 @@ function renderGanttAnalysis(cp) {
       <td data-label="LS" class="numeric">${formatShortID(t.ls)}</td>
       <td data-label="LF" class="numeric">${formatShortID(t.lf)}</td>
       <td data-label="Slack" class="numeric">${t.slack} hari</td>
-      <td data-label="Status">${t.isCritical ? '<span class="badge tinggi">Kritis</span>' : '<span class="badge neutral">Float</span>'}</td>
+      <td data-label="Status">${t.isCritical ? '<span class="badge crit">Kritis</span>' : '<span class="badge neutral">Float</span>'}</td>
     </tr>`).join('');
 
   const pathRows = cp.paths.map((p, i) => `
@@ -289,39 +326,83 @@ function renderGanttAnalysis(cp) {
       <td data-label="Durasi kegiatan">${p.items.map((it) => `${esc(it.code)} (${it.duration})`).join(' → ')}</td>
       <td data-label="Total estimasi" class="numeric cell-strong">${p.total} hari</td>
       <td data-label="Rentang" class="numeric">${formatShortID(p.start)} – ${formatShortID(p.end)}</td>
-      <td data-label="Keterangan">${p.isCritical ? '<span class="badge tinggi">Critical Path</span>' : '<span class="cell-muted">—</span>'}</td>
+      <td data-label="Keterangan">${p.isCritical ? '<span class="badge crit">Kritis</span>' : '<span class="cell-muted">—</span>'}</td>
     </tr>`).join('');
 
   el.innerHTML = `
     ${statRow}
-    <h3 class="table-title">📋 Rincian Critical Path (per kegiatan)</h3>
+    <h3 class="table-title"><svg class="ic" aria-hidden="true"><use href="#ic-table"></use></svg>Rincian Critical Path (per kegiatan)</h3>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>Kode</th><th>Kegiatan</th><th>Durasi</th>
-          <th>ES (mulai tercepat)</th><th>EF (selesai tercepat)</th>
-          <th>LS (mulai terlambat)</th><th>LF (selesai terlambat)</th>
-          <th>Slack</th><th>Status</th>
+          <th>Kode</th><th>Kegiatan</th><th class="numeric">Durasi</th>
+          <th class="numeric">ES (mulai tercepat)</th><th class="numeric">EF (selesai tercepat)</th>
+          <th class="numeric">LS (mulai terlambat)</th><th class="numeric">LF (selesai terlambat)</th>
+          <th class="numeric">Slack</th><th>Status</th>
         </tr></thead>
         <tbody>${detailRows}</tbody>
       </table>
     </div>
-    <h3 class="table-title">🗺️ Semua Jalur (awal → akhir proyek)</h3>
+    <h3 class="table-title"><svg class="ic" aria-hidden="true"><use href="#ic-route"></use></svg>Semua Jalur (awal → akhir proyek)</h3>
     <div class="table-wrap">
       <table>
         <thead><tr>
-          <th>No</th><th>Jalur</th><th>Durasi tiap kegiatan</th>
-          <th>Total estimasi</th><th>Rentang tanggal</th><th>Keterangan</th>
+          <th class="numeric">No</th><th>Jalur</th><th>Durasi tiap kegiatan</th>
+          <th class="numeric">Total estimasi</th><th class="numeric">Rentang tanggal</th><th>Keterangan</th>
         </tr></thead>
         <tbody>${pathRows}</tbody>
       </table>
     </div>
-    ${cp.truncatedPaths ? '<p class="hint" style="margin-top:8px;">⚠️ Jumlah jalur sangat banyak — hanya ditampilkan sebagian (batas 500 jalur).</p>' : ''}
+    ${cp.truncatedPaths ? '<p class="hint" style="margin-top:8px;"><svg class="ic ic-14" aria-hidden="true"><use href="#ic-alert-triangle"></use></svg> Jumlah jalur sangat banyak — hanya ditampilkan sebagian (batas 500 jalur).</p>' : ''}
     <p class="hint" style="margin-top:8px;">
       ES/EF dihitung dari jadwal otomatis; LS/LF dari backward pass; slack = hari kerja
       yang bisa digeser tanpa menggeser akhir proyek. Jalur dengan total estimasi
       terpanjang ditandai sebagai critical path.
     </p>`;
+}
+
+/* ---------- tooltip hover bar (kode, nama, tanggal, durasi, resource) ---------- */
+
+let ganttTip = null;
+
+function getGanttTip() {
+  if (!ganttTip) {
+    ganttTip = document.createElement('div');
+    ganttTip.className = 'gantt-tip';
+    ganttTip.setAttribute('role', 'tooltip');
+    document.body.appendChild(ganttTip);
+  }
+  return ganttTip;
+}
+
+function positionGanttTip(x, y) {
+  const tip = getGanttTip();
+  const rect = tip.getBoundingClientRect();
+  let left = x + 14;
+  let top = y + 18;
+  if (left + rect.width > window.innerWidth - 8) left = x - rect.width - 14;
+  if (left < 8) left = 8;
+  if (top + rect.height > window.innerHeight - 8) top = y - rect.height - 14;
+  if (top < 8) top = 8;
+  tip.style.left = `${left}px`;
+  tip.style.top = `${top}px`;
+}
+
+function showGanttTip(task, x, y) {
+  const tip = getGanttTip();
+  const resNames = task.resources.map((r) => r.name).join(', ') || '—';
+  tip.innerHTML = `
+    <div class="tip-head"><span class="tip-code">${esc(task.code)}</span>${esc(task.name)}</div>
+    <div class="tip-row"><span class="tip-key">Mulai</span><span class="tip-val">${formatDateID(task.startDate)}</span></div>
+    <div class="tip-row"><span class="tip-key">Selesai</span><span class="tip-val">${formatDateID(task.endDate)}</span></div>
+    <div class="tip-row"><span class="tip-key">Durasi</span><span class="tip-val">${task.duration} hari kerja</span></div>
+    <div class="tip-row"><span class="tip-key">Resource</span><span class="tip-val">${esc(resNames)}</span></div>`;
+  tip.classList.add('show');
+  positionGanttTip(x, y);
+}
+
+function hideGanttTip() {
+  if (ganttTip) ganttTip.classList.remove('show');
 }
 
 /* ---------- event ---------- */
@@ -343,4 +424,19 @@ function bindGanttEvents() {
   document.getElementById('gantt-content').addEventListener('mouseout', () => {
     document.querySelectorAll('.gbar').forEach((bar) => { bar.style.filter = ''; });
   });
+
+  // Tooltip bar: kode, nama, mulai, selesai, durasi, resource
+  const content = document.getElementById('gantt-content');
+  content.addEventListener('mouseover', (e) => {
+    const bar = e.target.closest('.gbar, .gbar-out');
+    if (!bar) return;
+    const task = state.tasks.find((t) => t.id === Number(bar.dataset.taskId));
+    if (task) showGanttTip(task, e.clientX, e.clientY);
+  });
+  content.addEventListener('mousemove', (e) => {
+    if (!ganttTip || !ganttTip.classList.contains('show')) return;
+    if (e.target.closest('.gbar, .gbar-out')) positionGanttTip(e.clientX, e.clientY);
+    else hideGanttTip();
+  });
+  content.addEventListener('mouseleave', hideGanttTip);
 }

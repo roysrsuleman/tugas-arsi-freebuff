@@ -9,26 +9,35 @@ function renderProjectCards() {
   const container = document.getElementById('project-cards');
   if (!state.projects.length) {
     container.innerHTML = `
-      <div class="empty-state" style="grid-column: 1 / -1;">
-        <span class="empty-icon">📁</span>
-        Belum ada proyek. Klik <strong>＋ Proyek Baru</strong> untuk memulai.
+      <div class="empty-state full">
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-folder"></use></svg></span>
+        <p>Belum ada proyek. Klik <strong>Proyek Baru</strong> untuk memulai.</p>
+        <button type="button" class="btn primary" data-empty-action="new-project">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Proyek Baru
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="new-project"]')
+      .addEventListener('click', () => openProjectModal());
     return;
   }
 
   container.innerHTML = state.projects.map((p) => `
     <article class="card project-card ${p.id === state.currentProjectId ? 'active' : ''}" data-project-id="${p.id}">
-      ${p.id === state.currentProjectId ? '<span class="active-flag">AKTIF</span>' : ''}
+      ${p.id === state.currentProjectId ? '<span class="active-flag">Aktif</span>' : ''}
       <h3>${esc(p.name)}</h3>
-      ${p.organization ? `<span class="org">🏢 ${esc(p.organization)}</span>` : ''}
+      ${p.organization ? `<span class="org"><svg class="ic ic-14" aria-hidden="true"><use href="#ic-building"></use></svg>${esc(p.organization)}</span>` : ''}
       <p class="desc">${esc(p.description || 'Tidak ada deskripsi.')}</p>
       <div class="meta-row">
-        <span>🗓 Mulai: <strong>${formatDateID(p.startDate)}</strong></span>
-        <span>✅ <strong>${p.taskCount}</strong> kegiatan</span>
+        <span><svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar"></use></svg>Mulai <strong>${formatDateID(p.startDate)}</strong></span>
+        <span><svg class="ic ic-14" aria-hidden="true"><use href="#ic-check-square"></use></svg><strong>${p.taskCount}</strong> kegiatan</span>
       </div>
       <div class="card-actions">
-        <button class="btn ghost small" data-action="edit" data-id="${p.id}">Edit</button>
-        <button class="btn danger small" data-action="delete" data-id="${p.id}">Hapus</button>
+        <button class="btn ghost small" data-action="edit" data-id="${p.id}" aria-label="Edit ${esc(p.name)}">
+          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-pencil"></use></svg>Edit
+        </button>
+        <button class="btn danger small" data-action="delete" data-id="${p.id}" aria-label="Hapus ${esc(p.name)}">
+          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-trash"></use></svg>Hapus
+        </button>
       </div>
     </article>
   `).join('');
@@ -136,11 +145,11 @@ function renderCalendarPanel() {
       <div class="radio-row">
         <label class="radio-pill">
           <input type="radio" name="weekend-mode" value="off" ${mode === 'off' ? 'checked' : ''}>
-          🌴 Weekend libur (tidak dihitung durasi)
+          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar-off"></use></svg>Weekend libur (tidak dihitung durasi)
         </label>
         <label class="radio-pill">
           <input type="radio" name="weekend-mode" value="work" ${mode === 'work' ? 'checked' : ''}>
-          💼 Tetap bekerja (weekend = hari kerja)
+          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-briefcase"></use></svg>Tetap bekerja (weekend = hari kerja)
         </label>
       </div>
     </div>
@@ -149,20 +158,22 @@ function renderCalendarPanel() {
       <h3>Hari Libur Custom</h3>
       <div class="inline-form">
         <input type="date" id="holiday-date" aria-label="Tanggal hari libur">
-        <input type="text" id="holiday-label" placeholder="Keterangan (cth: HUT RI)" maxlength="120"
-               style="flex:1; min-width:170px; padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit;">
-        <select id="holiday-type" aria-label="Tipe hari libur"
-                style="padding:8px 10px; border:1px solid var(--border); border-radius:8px; font-family:inherit; background:#fff;">
+        <input type="text" id="holiday-label" class="cal-text" placeholder="Keterangan (cth: HUT RI)" maxlength="120">
+        <select id="holiday-type" class="cal-select" aria-label="Tipe hari libur">
           <option value="one_off">Sekali saja</option>
           <option value="recurring">Berulang tiap tahun</option>
         </select>
-        <button type="button" class="btn ghost" id="btn-add-holiday">Tambah</button>
+        <button type="button" class="btn ghost" id="btn-add-holiday">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Tambah
+        </button>
       </div>
       <div id="holiday-list" class="list-rows"></div>
     </div>
 
     <div class="cal-section" style="display:flex; justify-content:flex-end;">
-      <button type="button" class="btn primary" id="btn-save-calendar">💾 Simpan Pengaturan Kalender</button>
+      <button type="button" class="btn primary" id="btn-save-calendar">
+        <svg class="ic" aria-hidden="true"><use href="#ic-save"></use></svg>Simpan Pengaturan Kalender
+      </button>
     </div>
   `;
 
@@ -187,13 +198,15 @@ function renderHolidayList() {
     return `
       <div class="list-row">
         <div class="row-main">
-          <span class="row-date">🗓 ${formatDateID(h.date)}</span>
+          <span class="row-date"><svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar"></use></svg>${formatDateID(h.date)}</span>
           <span class="row-label">${esc(h.label || 'Tanpa keterangan')}</span>
           <span class="badge ${h.type === 'recurring' ? 'info' : 'neutral'}">
             ${h.type === 'recurring' ? 'Tiap tahun' : 'Sekali saja'}
           </span>
         </div>
-        <button type="button" class="btn danger small" data-holiday-idx="${idx}">Hapus</button>
+        <button type="button" class="btn danger small" data-holiday-idx="${idx}" aria-label="Hapus hari libur ${formatDateID(h.date)}">
+          <svg class="ic ic-14" aria-hidden="true"><use href="#ic-trash"></use></svg>Hapus
+        </button>
       </div>`;
   }).join('');
 

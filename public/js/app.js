@@ -46,9 +46,12 @@ function formatRp(n) {
 
 function toast(message, type = 'ok') {
   const container = document.getElementById('toast-container');
+  const kind = type === 'error' ? 'error' : type === 'info' ? 'info' : 'ok';
   const el = document.createElement('div');
-  el.className = `toast ${type === 'error' ? 'error' : type === 'info' ? 'info' : ''}`;
-  el.textContent = message;
+  el.className = `toast ${kind}`;
+  const icon = kind === 'error' ? '#ic-alert-circle' : kind === 'info' ? '#ic-info' : '#ic-check-circle';
+  el.innerHTML = `<svg class="ic" aria-hidden="true"><use href="${icon}"></use></svg><span class="toast-msg"></span>`;
+  el.querySelector('.toast-msg').textContent = message;
   container.appendChild(el);
   setTimeout(() => {
     el.style.opacity = '0';
@@ -78,7 +81,24 @@ function handle(fn) {
   };
 }
 
-/* ---------- Navigasi tab ---------- */
+/* ---------- Navigasi tab (sidebar) ---------- */
+
+const PAGE_TITLES = {
+  projects: 'Proyek',
+  tasks: 'Kegiatan',
+  resources: 'Resource',
+  gantt: 'Gantt Chart',
+  pert: 'Diagram PERT',
+};
+
+/** Buka/tutup sidebar versi layar kecil. */
+function setNavOpen(open) {
+  document.body.classList.toggle('nav-open', open);
+  const toggle = document.getElementById('menu-toggle');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (toggle) toggle.setAttribute('aria-expanded', String(open));
+  if (backdrop) backdrop.hidden = !open;
+}
 
 function showTab(name) {
   state.activeTab = name;
@@ -91,6 +111,15 @@ function showTab(name) {
   document.querySelectorAll('.tab-panel').forEach((panel) => {
     panel.classList.toggle('active', panel.id === `tab-${name}`);
   });
+
+  // Top bar: judul halaman + tombol aksi utama sesuai tab
+  const title = document.getElementById('page-title');
+  if (title) title.textContent = PAGE_TITLES[name] || 'Proyek';
+  document.querySelectorAll('.topbar-actions [data-for]').forEach((el) => {
+    el.hidden = el.dataset.for !== name;
+  });
+
+  setNavOpen(false); // tutup menu mobile setelah pindah tab
 }
 
 /* ---------- Data ---------- */
@@ -174,7 +203,27 @@ function init() {
   document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') {
       document.querySelectorAll('.modal-overlay:not([hidden])').forEach((m) => closeModal(m.id));
+      setNavOpen(false);
     }
+  });
+
+  // Sidebar layar kecil: buka/tutup
+  const menuToggle = document.getElementById('menu-toggle');
+  const sidebarClose = document.getElementById('sidebar-close');
+  const backdrop = document.getElementById('sidebar-backdrop');
+  if (menuToggle) {
+    menuToggle.addEventListener('click', () => {
+      setNavOpen(!document.body.classList.contains('nav-open'));
+    });
+  }
+  if (sidebarClose) sidebarClose.addEventListener('click', () => setNavOpen(false));
+  if (backdrop) backdrop.addEventListener('click', () => setNavOpen(false));
+
+  // Pesan error field di bawah input: tampil setelah submit ditolak validasi browser
+  document.querySelectorAll('form').forEach((form) => {
+    form.addEventListener('invalid', () => form.classList.add('form-errors'), true);
+    form.addEventListener('submit', () => form.classList.remove('form-errors'));
+    form.addEventListener('reset', () => form.classList.remove('form-errors'));
   });
 
   bindProjectEvents();

@@ -13,17 +13,27 @@ function renderResources() {
   if (!state.currentProjectId) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">👥</span>
-        Pilih atau buat <strong>proyek</strong> terlebih dahulu untuk mengelola resource.
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-users"></use></svg></span>
+        <p>Pilih atau buat <strong>proyek</strong> terlebih dahulu untuk mengelola resource.</p>
+        <button type="button" class="btn primary" data-empty-action="go-projects">
+          <svg class="ic" aria-hidden="true"><use href="#ic-folder"></use></svg>Buka tab Proyek
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="go-projects"]')
+      .addEventListener('click', () => showTab('projects'));
     return;
   }
   if (!state.resources.length) {
     container.innerHTML = `
       <div class="empty-state">
-        <span class="empty-icon">👥</span>
-        Belum ada resource di proyek ini. Klik <strong>＋ Resource Baru</strong> untuk menambahkan.
+        <span class="empty-icon"><svg class="ic ic-20" aria-hidden="true"><use href="#ic-users"></use></svg></span>
+        <p>Belum ada resource di proyek ini. Klik <strong>Resource Baru</strong> untuk menambahkan.</p>
+        <button type="button" class="btn primary" data-empty-action="new-resource">
+          <svg class="ic" aria-hidden="true"><use href="#ic-plus"></use></svg>Resource Baru
+        </button>
       </div>`;
+    container.querySelector('[data-empty-action="new-resource"]')
+      .addEventListener('click', () => openResourceModal());
     return;
   }
 
@@ -34,21 +44,25 @@ function renderResources() {
           <h3>${esc(r.name)}</h3>
           <span class="badge info">${esc(r.position)}</span>
           <div class="desc">
-            ${r.email ? `✉️ ${esc(r.email)}<br>` : ''}
-            ${r.phone ? `📞 ${esc(r.phone)}` : ''}
+            ${r.email ? `<span class="meta-line"><svg class="ic ic-14" aria-hidden="true"><use href="#ic-mail"></use></svg>${esc(r.email)}</span>` : ''}
+            ${r.phone ? `<span class="meta-line"><svg class="ic ic-14" aria-hidden="true"><use href="#ic-phone"></use></svg>${esc(r.phone)}</span>` : ''}
             ${!r.email && !r.phone ? '<span class="cell-muted">Tidak ada kontak.</span>' : ''}
           </div>
           <div class="meta-row">
-            <span>💰 Tarif: <strong>${formatRp(r.dailyRate)}</strong>/hari</span>
-            <span>📌 <strong>${r.assignedTaskCount}</strong> kegiatan</span>
+            <span><svg class="ic ic-14" aria-hidden="true"><use href="#ic-wallet"></use></svg>Tarif <strong>${formatRp(r.dailyRate)}</strong>/hari</span>
+            <span><svg class="ic ic-14" aria-hidden="true"><use href="#ic-clipboard"></use></svg><strong>${r.assignedTaskCount}</strong> kegiatan</span>
           </div>
           ${r.daysOff.length ? `
             <div class="chips">
-              ${r.daysOff.slice().sort().map((d) => `<span class="chip">🌴 ${formatDateID(d)}</span>`).join('')}
+              ${r.daysOff.slice().sort().map((d) => `<span class="chip"><svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar-off"></use></svg>${formatDateID(d)}</span>`).join('')}
             </div>` : ''}
           <div class="card-actions">
-            <button class="btn ghost small" data-action="edit" data-id="${r.id}">Edit</button>
-            <button class="btn danger small" data-action="delete" data-id="${r.id}">Hapus</button>
+            <button class="btn ghost small" data-action="edit" data-id="${r.id}" aria-label="Edit ${esc(r.name)}">
+              <svg class="ic ic-14" aria-hidden="true"><use href="#ic-pencil"></use></svg>Edit
+            </button>
+            <button class="btn danger small" data-action="delete" data-id="${r.id}" aria-label="Hapus ${esc(r.name)}">
+              <svg class="ic ic-14" aria-hidden="true"><use href="#ic-trash"></use></svg>Hapus
+            </button>
           </div>
         </article>`).join('')}
     </div>`;
@@ -96,8 +110,10 @@ function renderDaysOffChips() {
   const sorted = [...draftDaysOff].sort();
   container.innerHTML = sorted.map((d) => `
     <span class="chip">
-      🌴 ${formatDateID(d)}
-      <button type="button" data-dayoff="${d}" aria-label="Hapus hari libur ${d}">✕</button>
+      <svg class="ic ic-14" aria-hidden="true"><use href="#ic-calendar-off"></use></svg>${formatDateID(d)}
+      <button type="button" data-dayoff="${d}" aria-label="Hapus hari libur ${d}">
+        <svg class="ic ic-14" aria-hidden="true"><use href="#ic-x"></use></svg>
+      </button>
     </span>`).join('');
 
   container.querySelectorAll('[data-dayoff]').forEach((btn) => {
