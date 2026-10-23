@@ -11,6 +11,7 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
 ## ✨ Fitur
 
 ### 1. Proyek
+
 - CRUD proyek: nama, organisasi, deskripsi, tanggal mulai.
 - Pengaturan kalender per proyek:
   - Hari weekend yang bisa dicentang (Sabtu/Minggu, atau hari lain);
@@ -20,6 +21,7 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
 - Perubahan kalender otomatis menghitung ulang seluruh jadwal kegiatan.
 
 ### 2. Kegiatan (Task)
+
 - CRUD kegiatan: kode (A, B, C, …), nama, durasi (hari kerja), prioritas, warna bar.
 - Dependensi: satu atau beberapa kegiatan pendahulu, masing-masing dengan
   **tipe FS (Finish-Start) / SS (Start-Start)** dan **delay (hari kerja)**.
@@ -30,6 +32,7 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
 - Dependensi melingkar (circular) terdeteksi dan ditolak dengan pesan yang jelas.
 
 ### 3. Resource / Anggota Tim
+
 - CRUD resource: nama, email, telepon, posisi (Project Manager, Analis,
   Programmer, Tester), tarif per hari, dan hari libur pribadi (opsional).
 - Penugasan satu atau lebih resource ke tiap kegiatan.
@@ -37,6 +40,7 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
   (durasi × jumlah tarif resource yang ditugaskan).
 
 ### 4. Gantt Chart
+
 - Panel kiri: daftar kegiatan (kode, nama, durasi, mulai, selesai, resource).
 - Panel kanan: bar pada timeline per hari — kolom **weekend & hari libur diarsir**
   warna berbeda, **panah dependensi** antar bar (FS/SS + label delay).
@@ -44,16 +48,19 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
 - Tabel rincian ES/EF/LS/LF/slack dan tabel **semua jalur** + total durasi proyek.
 
 ### 5. Critical Path (CPM)
+
 - Graf dependensi → **forward pass** (ES, EF) dan **backward pass** (LS, LF);
   **slack** = hari kerja yang bisa digeser; slack = 0 → kegiatan **kritis**.
 - Tabel semua jalur dari awal sampai akhir proyek: urutan kegiatan, durasi tiap
   kegiatan, total estimasi durasi; jalur terpanjang ditandai sebagai critical path.
 
 ### 6. Diagram PERT
+
 - Jaringan (SVG): node = kegiatan (kode + durasi, tooltip nama + tanggal),
   panah = dependensi; node & panah jalur kritis berwarna merah.
 
 ### 7. Data Contoh Bawaan
+
 - Tombol **🎲 Muat Data Contoh** (tab Proyek) memuat dua proyek sekaligus
   (idempoten — tidak menduplikasi nama yang sudah ada):
   1. **"Sistem Informasi Kelola Pemberkasan"** — 10 kegiatan (A–J), dependensi FS.
@@ -64,6 +71,7 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
      7 anggota tim (1 Project Manager, 2 Analis, 2 Programmer, 2 Tester).
 
 ### 8. Validasi & Error
+
 - Semua input tervalidasi (wajib diisi, durasi bilangan bulat ≥ 1, tanggal valid,
   email valid, warna heksa, prioritas/posisi dari pilihan resmi).
 - Dependensi melingkar & pendahulu diri sendiri ditolak dengan pesan jelas
@@ -74,12 +82,12 @@ Tampilan rapi, responsif, dan berbahasa Indonesia.
 
 ## 🛠 Tech Stack
 
-| Bagian    | Teknologi                                             |
-|-----------|-------------------------------------------------------|
-| Backend   | Node.js + Express                                     |
-| Database  | SQLite via `better-sqlite3` (sinkron, tanpa server)   |
-| Frontend  | HTML + CSS + JavaScript murni (tanpa framework)       |
-| Test      | `node:test` (bawaan Node.js) + smoke test Chrome headless (CDP) |
+| Bagian   | Teknologi                                                       |
+| -------- | --------------------------------------------------------------- |
+| Backend  | Node.js + Express                                               |
+| Database | SQLite via `better-sqlite3` (sinkron, tanpa server)             |
+| Frontend | HTML + CSS + JavaScript murni (tanpa framework)                 |
+| Test     | `node:test` (bawaan Node.js) + smoke test Chrome headless (CDP) |
 
 ## 📁 Struktur Proyek
 
@@ -158,16 +166,16 @@ B-E-H-J), validasi form, dan konfirmasi hapus — semuanya tanpa error JavaScrip
 
 ## 🌐 Ringkasan REST API
 
-| Method | Endpoint                          | Fungsi                              |
-|--------|-----------------------------------|-------------------------------------|
-| GET    | `/api/projects`                   | Daftar proyek                       |
-| POST   | `/api/projects`                   | Buat proyek                         |
-| GET    | `/api/projects/:id`               | Detail proyek + kalender            |
-| PUT    | `/api/projects/:id`               | Ubah proyek                         |
-| DELETE | `/api/projects/:id`               | Hapus proyek                        |
-| PUT    | `/api/projects/:id/calendar`      | Simpan weekend & hari libur (recalc)|
-| GET    | `/api/projects/:id/tasks`         | Daftar kegiatan (+tanggal, biaya)   |
-| POST   | `/api/projects/:id/tasks`         | Buat kegiatan (+dependensi)         |
+| Method | Endpoint                          | Fungsi                               |
+| ------ | --------------------------------- | ------------------------------------ |
+| GET    | `/api/projects`                   | Daftar proyek                        |
+| POST   | `/api/projects`                   | Buat proyek                          |
+| GET    | `/api/projects/:id`               | Detail proyek + kalender             |
+| PUT    | `/api/projects/:id`               | Ubah proyek                          |
+| DELETE | `/api/projects/:id`               | Hapus proyek                         |
+| PUT    | `/api/projects/:id/calendar`      | Simpan weekend & hari libur (recalc) |
+| GET    | `/api/projects/:id/tasks`         | Daftar kegiatan (+tanggal, biaya)    |
+| POST   | `/api/projects/:id/tasks`         | Buat kegiatan (+dependensi)          |
 | PUT    | `/api/tasks/:id`                  | Ubah kegiatan (recalc otomatis)      |
 | DELETE | `/api/tasks/:id`                  | Hapus kegiatan                       |
 | GET    | `/api/projects/:id/resources`     | Daftar resource                      |
@@ -185,17 +193,13 @@ curl -X POST http://localhost:3000/api/seed -H 'Content-Type: application/json' 
 
 ## 📸 Screenshot
 
-> Letakkan gambar-gambar berikut di folder [`docs/`](docs/) lalu bagian ini akan
-> menampilkannya. (Belum ditambahkan — menunggu file screenshot.)
-
-| Tampilan            | Gambar                          |
-|---------------------|---------------------------------|
-| Tampilan utama      | ![Tampilan utama](docs/tampilan-utama.png) |
-| Manajemen proyek    | ![Manajemen proyek](docs/manajemen-proyek.png) |
-| Manajemen kegiatan  | ![Manajemen kegiatan](docs/manajemen-kegiatan.png) |
-| Manajemen resource  | ![Manajemen resource](docs/manajemen-resource.png) |
-| Gantt chart         | ![Gantt chart](docs/gantt-chart.png) |
-| Diagram PERT        | ![Diagram PERT](docs/pert.png) |
+| Tampilan           | Gambar                                             |
+| ------------------ | -------------------------------------------------- |
+| Tampilan utama     | ![Tampilan utama](docs/tampilan-utama.png)         |
+| Manajemen kegiatan | ![Manajemen kegiatan](docs/manajemen-kegiatan.png) |
+| Manajemen resource | ![Manajemen resource](docs/manajemen-resource.png) |
+| Gantt chart        | ![Gantt chart](docs/gantt-chart.png)               |
+| Diagram PERT       | ![Diagram PERT](docs/pert.png)                     |
 
 ## 📄 Lisensi
 
